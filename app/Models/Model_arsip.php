@@ -25,11 +25,12 @@ class Model_arsip extends Model
     public function getCountKategoriByDepId(int $depId): array
     {
         return $this->db->table($this->table)
-            ->select('tbl_kategori.nama_kategori')
+            ->select('COALESCE(tbl_kategori.nama_kategori, "Tanpa Kategori") AS nama_kategori')
             ->selectCount($this->table . '.id_arsip', 'total')
             ->join('tbl_kategori', 'tbl_kategori.id_kategori = ' . $this->table . '.id_kategori', 'left')
             ->where($this->table . '.id_dep', $depId)
-            ->groupBy('tbl_kategori.nama_kategori')
+            ->groupBy('tbl_kategori.id_kategori')
+            ->orderBy('total', 'DESC')
             ->get()
             ->getResultArray();
     }

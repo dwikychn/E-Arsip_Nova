@@ -15,13 +15,17 @@
                     $db = \Config\Database::connect();
 
                     // Hitung jumlah pesan baru
+                    $idUser = session()->get('id_user');
+
                     $jmlPesanBaru = $db->table('pesan_bantuan')
+                        ->where('id_penerima', $idUser)
                         ->where('status', 'baru')
                         ->countAllResults();
 
                     // Ambil 5 pesan terbaru
-                    $pesanBaru = $db->table('pesan_bantuan')
+                   $pesanBaru = $db->table('pesan_bantuan')
                         ->join('tbl_user', 'tbl_user.id_user = pesan_bantuan.id_pengirim')
+                        ->where('pesan_bantuan.id_penerima', $idUser)
                         ->orderBy('id_pesan', 'DESC')
                         ->limit(5)
                         ->get()
@@ -57,7 +61,7 @@
                                     <?php endforeach; ?>
                                 </ul>
                             </li>
-                            <li class="footer"><a href="<?= base_url('pesanmasuk') ?>">Lihat semua pesan</a></li>
+                            <li class="footer"><a href="<?= base_url('bantuan') ?>">Lihat semua pesan</a></li>
                         </ul>
             </li>
         <?php endif; ?>

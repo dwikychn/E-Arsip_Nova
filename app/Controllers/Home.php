@@ -115,7 +115,6 @@ class Home extends BaseController
             'totalUser'     => $totalUser,
             'lastActivity'  => $lastActivity
         ];
-
         return view('pages/home_admin', $data);
     }
 

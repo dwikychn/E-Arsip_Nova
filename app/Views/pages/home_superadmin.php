@@ -1,10 +1,11 @@
 <?= $this->extend('layouts/app') ?>
 <?= $this->section('content') ?>
+
 <div class="row">
     <?php
     $boxes = [
         ['total' => $tot_Rahasia, 'label' => 'Rahasia', 'icon' => 'fa-lock', 'bg' => 'bg-pastel-pink'],
-        ['total' => $tot_terbatas, 'label' => 'terbatas', 'icon' => 'fa-shield', 'bg' => 'bg-pastel-yellow'],
+        ['total' => $tot_terbatas, 'label' => 'Terbatas', 'icon' => 'fa-shield', 'bg' => 'bg-pastel-yellow'],
         ['total' => $tot_Umum, 'label' => 'Umum', 'icon' => 'fa-users', 'bg' => 'bg-pastel-green'],
         ['total' => $tot_size, 'label' => 'Total Size Arsip', 'icon' => 'fa-database', 'bg' => 'bg-pastel-blue']
     ];
@@ -81,7 +82,7 @@
             </div>
         </div>
 
-        <!-- 📊 Diagram Arsip per Departemen -->
+        <!-- DIAGRAM ARSIP PER DEPARTEMEN -->
         <div class="box box-default rounded-lg shadow-sm mt-3">
             <div class="box-header with-border bg-success text-white">
                 <h3 class="box-title">Diagram Arsip per Departemen</h3>
@@ -95,7 +96,7 @@
     <!-- RIGHT COLUMN -->
     <div class="col-md-5">
         <div class="row">
-            <!-- 🍩 Diagram Arsip per Kategori -->
+            <!-- DIAGRAM ARSIP PER KATEGORI -->
             <div class="col-md-12">
                 <div class="box box-default rounded-lg shadow-sm">
                     <div class="box-header with-border bg-primary text-white">
@@ -142,22 +143,13 @@
     </div>
 </div>
 
-<!-- =================== JS CHART =================== -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+<script src="<?= base_url('template/custom/js/chart.umd.min.js') ?>" defer></script>
 <script defer>
     window.addEventListener('load', function() {
-        console.log("✅ Superadmin dashboard JS loaded");
-
-        // === Ambil data dari controller ===
         const departemenData = <?= json_encode($departemenChart) ?>;
         const kategoriData = <?= json_encode($kategoriChart) ?>;
 
-        console.log("Superadmin departemenChart:", departemenData);
-        console.log("Superadmin kategoriChart:", kategoriData);
-
-        // =====================================================
-        // 1️⃣ DIAGRAM BAR — JUMLAH ARSIP PER DEPARTEMEN
-        // =====================================================
+        // DIAGRAM BAR - ARSIP PER DEPARTEMEN
         const depLabels = departemenData.map(d => d.nama_dep);
         const depValues = departemenData.map(d => parseInt(d.total) || 0);
 
@@ -184,13 +176,6 @@
                                 size: 16
                             }
                         },
-                        tooltip: {
-                            callbacks: {
-                                label: (context) => {
-                                    return `${context.label}: ${context.raw} arsip`;
-                                }
-                            }
-                        },
                         legend: {
                             display: false
                         }
@@ -205,13 +190,9 @@
                     }
                 }
             });
-        } else {
-            console.warn("⚠️ chartDepartemenSuper tidak ditemukan");
         }
 
-        // =====================================================
-        // 2️⃣ DIAGRAM DONUT — JUMLAH KATEGORI PER DEPARTEMEN
-        // =====================================================
+        // DIAGRAM DONUT - KATEGORI PER DEPARTEMEN
         const katLabels = kategoriData.map(k => k.nama_kategori || "Tidak Ada Nama");
         const katValues = kategoriData.map(k => parseInt(k.total) || 0);
 
@@ -244,15 +225,6 @@
                         },
                         legend: {
                             position: 'bottom'
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const label = context.label || '';
-                                    const value = context.raw || 0;
-                                    return `${label}: ${value} kategori`;
-                                }
-                            }
                         }
                     },
                     layout: {
@@ -260,8 +232,6 @@
                     }
                 }
             });
-        } else {
-            console.warn("⚠️ chartKategoriSuper tidak ditemukan");
         }
     });
 </script>

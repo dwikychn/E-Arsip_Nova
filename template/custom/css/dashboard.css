@@ -1,0 +1,228 @@
+/* =====================================================
+   🌈 DASHBOARD STYLE - UNIVERSAL (SUPERADMIN | ADMIN | USER)
+   ===================================================== */
+
+/* =================== GLOBAL STYLE =================== */
+.small-box {
+  border-radius: 12px !important;
+  transition: all 0.3s ease;
+}
+
+.small-box:hover {
+  transform: translateY(-4px);
+}
+
+.small-box .inner {
+  padding: 15px;
+}
+
+.small-box .icon {
+  top: 10px;
+  right: 15px;
+  color: rgba(0, 0, 0, 0.2);
+}
+
+.small-box .small-box-footer {
+  background: rgba(255, 255, 255, 0.4);
+  color: #333 !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  text-align: center;
+  display: block;
+  padding: 6px 0;
+  border-radius: 0 0 12px 12px;
+  transition: background 0.3s ease;
+}
+
+.small-box .small-box-footer:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+/* =====================================================
+   ⚡ QUICK MENU BASE STYLE
+   ===================================================== */
+.quickmenu-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  color: #333;
+  background: #fff;
+  padding: 15px 20px;
+  margin-bottom: 15px;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.quickmenu-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+.quickmenu-icon {
+  font-size: 28px;
+  padding: 10px;
+  border-radius: 10px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 55px;
+  height: 55px;
+}
+
+.quickmenu-text strong {
+  font-size: 15px;
+  color: #333;
+}
+
+.quickmenu-text {
+  font-size: 13px;
+  color: #555;
+}
+
+/* =====================================================
+   🟣 SUPERADMIN / UNIVERSAL PASTEL COLOR
+   ===================================================== */
+.bg-pastel-pink {
+  background-color: #f9d5e5 !important;
+  color: #333 !important;
+}
+
+.bg-pastel-yellow {
+  background-color: #fff2b2 !important;
+  color: #333 !important;
+}
+
+.bg-pastel-green {
+  background-color: #b5ead7 !important;
+  color: #333 !important;
+}
+
+.bg-pastel-blue {
+  background-color: #c7ceea !important;
+  color: #333 !important;
+}
+
+.bg-pastel-pink:hover,
+.bg-pastel-yellow:hover,
+.bg-pastel-green:hover,
+.bg-pastel-blue:hover {
+  filter: brightness(0.95);
+}
+
+/* =====================================================
+   🔵 ADMIN COLOR SET
+   ===================================================== */
+.bg-admin-red {
+  background-color: #f8c9c9 !important;
+  color: #7f1d1d !important;
+}
+
+.bg-admin-yellow {
+  background-color: #fff4c2 !important;
+  color: #78350f !important;
+}
+
+.bg-admin-green {
+  background-color: #b7f0ce !important;
+  color: #065f46 !important;
+}
+
+.bg-admin-red:hover,
+.bg-admin-yellow:hover,
+.bg-admin-green:hover {
+  filter: brightness(0.95);
+}
+
+/* =====================================================
+   🟢 USER COLOR SET
+   ===================================================== */
+.bg-user-red {
+  background-color: #fddede !important;
+  color: #7f1d1d !important;
+}
+
+.bg-user-yellow {
+  background-color: #fff6bf !important;
+  color: #92400e !important;
+}
+
+.bg-user-green {
+  background-color: #c9f7d8 !important;
+  color: #065f46 !important;
+}
+
+.bg-user-red:hover,
+.bg-user-yellow:hover,
+.bg-user-green:hover {
+  filter: brightness(0.95);
+}
+
+/* Quickmenu icon coloring for user look */
+.quickmenu-icon.bg-success {
+  background-color: #c9f7d8;
+  color: #065f46;
+}
+
+.quickmenu-icon.bg-primary {
+  background-color: #fddede;
+  color: #7f1d1d;
+}
+
+.quickmenu-icon.bg-warning {
+  background-color: #fff6bf;
+  color: #92400e;
+}
+
+.quick-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: #fff;
+  padding: 15px 20px;
+  margin: 10px;
+  text-decoration: none;
+  color: #333;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.quick-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+.quick-icon {
+  font-size: 28px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 55px;
+  height: 55px;
+}
+
+.quick-content h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.quick-content p {
+  margin: 0;
+  font-size: 13px;
+  color: #555;
+}
+
+/* warna pastel tambahan */
+.bg-pastel-purple {
+  background-color: #d6c3f3 !important;
+  color: #333 !important;
+}
+
+.bg-pastel-orange {
+  background-color: #ffd5b5 !important;
+  color: #333 !important;
+}

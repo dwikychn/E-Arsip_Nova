@@ -1,0 +1,13 @@
+table th {
+  position: relative;
+}
+
+table th .resizer {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 5px;
+  cursor: col-resize;
+  user-select: none;
+  height: 100%;
+}

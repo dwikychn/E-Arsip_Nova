@@ -1,0 +1,59 @@
+.btn-action-primary {
+  position: relative;
+  background: #007bff;
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 18px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 6px rgba(0, 123, 255, 0.3);
+}
+
+.btn-action-primary i {
+  margin-right: 6px;
+  transition: transform 0.3s ease;
+}
+
+.btn-action-primary::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: white;
+  opacity: 0.2;
+  transition: all 0.4s ease;
+}
+
+.btn-action-primary:hover::before {
+  left: 100%;
+}
+
+.btn-action-primary:hover {
+  background: white;
+  color: #007bff;
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.4);
+}
+
+.btn-action-primary:hover i {
+  transform: rotate(180deg);
+}
+
+/* Hilangkan ikon sort DataTables */
+table.dataTable thead th.sorting:before,
+table.dataTable thead th.sorting:after,
+table.dataTable thead th.sorting_asc:before,
+table.dataTable thead th.sorting_asc:after,
+table.dataTable thead th.sorting_desc:before,
+table.dataTable thead th.sorting_desc:after,
+table.dataTable thead th.sorting_asc_disabled:before,
+table.dataTable thead th.sorting_asc_disabled:after,
+table.dataTable thead th.sorting_desc_disabled:before,
+table.dataTable thead th.sorting_desc_disabled:after {
+  content: none !important;
+  display: none !important;
+}

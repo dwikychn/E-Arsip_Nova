@@ -1,0 +1,331 @@
+/* ==================== SIDEBAR ==================== */
+.main-sidebar {
+  background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%) !important;
+  box-shadow: 2px 0 15px rgba(255, 255, 255, 0.08) !important;
+  border-right: 1px solid #e9ecef !important;
+}
+
+/* Header "MENU" di sidebar */
+.sidebar-menu > li.header {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+  color: #333 !important;
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  padding: 12px 20px;
+  margin: 10px 0;
+  border-radius: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Teks menu utama */
+.main-sidebar .sidebar a {
+  color: #333 !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 500;
+  border-radius: 8px;
+  margin: 2px 8px;
+  padding: 12px 15px !important;
+}
+
+/* Icon menu */
+.main-sidebar .sidebar a > i {
+  color: #000000 !important; /* Nonaktif hitam */
+  margin-right: 12px;
+  width: 20px;
+  text-align: center;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+/* Hover menu utama */
+.main-sidebar .sidebar a:hover {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+  color: #000 !important;
+  transform: translateX(5px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.main-sidebar .sidebar a:hover > i {
+  transform: scale(1.15);
+  color: #000 !important;
+}
+
+/* Menu aktif (utama) */
+.main-sidebar .sidebar-menu > li.active > a,
+.main-sidebar .sidebar-menu > li.menu-open > a {
+  background: linear-gradient(135deg, #0080ff 0%, #0080ff 100%) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border-left: 4px solid #d8e7ff !important;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15) !important;
+  border-radius: 12px;
+}
+
+/* Icon menu aktif (berwarna putih) */
+.main-sidebar .sidebar-menu > li.active > a > i,
+.main-sidebar .sidebar-menu > li.menu-open > a > i {
+  color: #ffffff !important;
+}
+
+/* ==================== SUBMENU ==================== */
+.main-sidebar .sidebar-menu .treeview-menu {
+  background: transparent !important;
+  border-left: none !important;
+  margin-left: 0 !important;
+  padding: 5px 0;
+  box-shadow: none !important;
+}
+
+/* Item submenu */
+.main-sidebar .sidebar-menu .treeview-menu > li > a {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border-radius: 8px !important;
+  margin: 3px 10px !important;
+  padding: 8px 15px !important;
+  transition: all 0.3s ease;
+}
+
+/* Hover submenu */
+.main-sidebar .sidebar-menu .treeview-menu > li > a:hover {
+  background: #e9f3ff !important;
+  color: #000000 !important;
+  transform: translateX(3px);
+}
+
+/* Submenu aktif */
+.main-sidebar .sidebar-menu .treeview-menu > li.active > a {
+  background: #0080ff !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  transform: translateX(3px);
+}
+
+/* ==================== HEADER ==================== */
+.main-header {
+  border-bottom: 1px solid #e9ecef !important;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08) !important;
+}
+
+.main-header .navbar {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
+  border: none !important;
+}
+
+.main-header .navbar .sidebar-toggle {
+  color: #333 !important;
+  border: none !important;
+  border-radius: 8px;
+  padding: 10px 15px;
+  transition: all 0.3s ease;
+}
+
+/* Hover toggle */
+.main-header .sidebar-toggle:hover {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+  color: #000 !important;
+  transform: scale(1.05);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Logo */
+.main-header .logo {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
+  color: #000 !important;
+  font-weight: 700;
+  font-size: 20px;
+  border: none !important;
+  letter-spacing: 1px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border-right: 1px solid #e9ecef !important;
+}
+
+.main-header .logo:hover {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+  color: #000 !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* ==================== NAVBAR USER & ICON ==================== */
+.main-header .navbar .nav > li > a {
+  color: #333 !important;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  margin: 5px;
+  padding: 10px 15px !important;
+}
+
+.main-header .navbar .nav > li > a > i {
+  transition: transform 0.3s ease;
+}
+
+/* Saat hover (ikon & username) */
+.main-header .navbar .nav > li > a:hover,
+.main-header .navbar .nav > li.open > a {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+  color: #000 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.main-header .navbar .nav > li > a:hover > i {
+  transform: scale(1.2) rotate(5deg);
+}
+
+/* Badge notification */
+.main-header .navbar .nav > li > a > .label {
+  background: linear-gradient(135deg, #495057 0%, #343a40 100%) !important;
+  border-radius: 10px;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: 700;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* Dropdown menu user */
+.main-header .navbar .dropdown-menu {
+  border-radius: 8px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e9ecef;
+  margin-top: 5px;
+  background: #fff;
+}
+
+.main-header .navbar .dropdown-menu > li > a {
+  color: #333 !important;
+  padding: 12px 20px;
+  transition: all 0.3s ease;
+}
+
+.main-header .navbar .dropdown-menu > li > a:hover {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+  color: #000 !important;
+  padding-left: 25px;
+}
+
+/* User Panel di sidebar */
+.user-panel {
+  padding: 15px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 8px;
+  margin: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.user-panel .image > img {
+  border: 3px solid #495057;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.user-panel .info {
+  color: #333 !important;
+  font-weight: 600;
+}
+
+/* Scrollbar sidebar */
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #adb5bd 0%, #6c757d 100%);
+  border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #6c757d 0%, #495057 100%);
+}
+
+/* Divider antar menu */
+.sidebar-menu > li {
+  position: relative;
+}
+
+.sidebar-menu > li:not(.header):not(:last-child):after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 15px;
+  right: 15px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    #e9ecef 50%,
+    transparent 100%
+  );
+}
+
+/* Focus efek */
+.main-sidebar .sidebar a:focus {
+  outline: 2px solid #dee2e6;
+  outline-offset: 2px;
+}
+
+/* Sembunyikan panah dropdown */
+.sidebar-menu li > a > .pull-right-container,
+.sidebar-menu li > a > .pull-right-container > i,
+.main-sidebar .treeview > a > .fa-angle-left,
+.sidebar-menu li.treeview > a > .fa.fa-angle-left,
+.main-sidebar .sidebar-menu .fa-angle-left {
+  display: none !important;
+}
+
+/* ==================== WARNA ICON SUBMENU ==================== */
+
+/* Submenu icon default (nonaktif) */
+.main-sidebar .sidebar-menu .treeview-menu > li > a > i {
+  color: #000000 !important; /* hitam */
+  transition: color 0.3s ease;
+}
+
+/* Submenu icon aktif (putih) */
+.main-sidebar .sidebar-menu .treeview-menu > li.active > a > i {
+  color: #ffffff !important; /* putih */
+}
+
+/* Saat hover submenu icon */
+.main-sidebar .sidebar-menu .treeview-menu > li > a:hover > i {
+  color: rgb(168, 211, 255) !important; /* biru saat hover */
+}
+
+/* ==================== Fix Bug ==================== */
+.main-sidebar .sidebar-menu > li.active,
+.main-sidebar .sidebar-menu > li.menu-open {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+  background-clip: padding-box;
+}
+
+.main-sidebar .sidebar-menu .treeview-menu {
+  background: transparent !important;
+  overflow: hidden;
+}
+
+.sidebar-menu > li:not(.header):after {
+  z-index: -1 !important;
+}
+
+.main-sidebar .sidebar-menu > li:hover,
+.main-sidebar .sidebar-menu > li:focus {
+  background-color: transparent !important;
+}

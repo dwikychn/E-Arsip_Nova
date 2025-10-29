@@ -51,4 +51,5 @@ $routes->post('arsip/hapus_multiple', 'Arsip::hapus_multiple');
 $routes->get('/departemen/all', 'Departemen::getAll');
 $routes->get('/user/byDepartemen/(:num)', 'User::byDepartemen/$1');
 $routes->get('cari/stream/(:num)', 'Cari::stream/$1');
+$routes->get('bantuan', 'Bantuan::index');
 $routes->post('bantuan/kirim', 'Bantuan::kirim');

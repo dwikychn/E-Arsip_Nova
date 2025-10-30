@@ -1,0 +1,142 @@
+/* Hapus semua border collapse bawaan */
+#tableCari {
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  width: 100% !important;
+}
+
+/* Sama ratakan padding untuk semua cell */
+#tableCari th,
+#tableCari td {
+  padding: 8px !important;
+  border: 1px solid #ddd !important;
+  vertical-align: middle !important;
+  box-sizing: border-box !important;
+}
+
+/* Lebar kolom tetap */
+#tableCari th:nth-child(1),
+#tableCari td:nth-child(1) {
+  width: 40px;
+  min-width: 40px;
+  max-width: 40px;
+}
+
+#tableCari th:nth-child(2),
+#tableCari td:nth-child(2) {
+  width: 50px;
+  min-width: 50px;
+  max-width: 50px;
+}
+
+#tableCari th:nth-child(3),
+#tableCari td:nth-child(3) {
+  width: 250px;
+  min-width: 250px;
+  max-width: 250px;
+}
+
+#tableCari th:nth-child(4),
+#tableCari td:nth-child(4) {
+  width: 200px;
+  min-width: 200px;
+  max-width: 200px;
+}
+
+#tableCari th:nth-child(5),
+#tableCari td:nth-child(5) {
+  width: 150px;
+  min-width: 150px;
+  max-width: 150px;
+}
+
+#tableCari th:nth-child(6),
+#tableCari td:nth-child(6) {
+  width: 150px;
+  min-width: 150px;
+  max-width: 150px;
+}
+
+#tableCari th:nth-child(7),
+#tableCari td:nth-child(7) {
+  width: 100px;
+  min-width: 100px;
+  max-width: 100px;
+}
+
+#tableCari th:nth-child(8),
+#tableCari td:nth-child(8) {
+  width: 120px;
+  min-width: 120px;
+  max-width: 120px;
+}
+
+#tableCari th:nth-child(9),
+#tableCari td:nth-child(9) {
+  width: 120px;
+  min-width: 120px;
+  max-width: 120px;
+}
+
+.table > tbody > tr:hover {
+  background-color: #f5faff;
+}
+
+.filters input {
+  width: 100%;
+  padding: 3px 6px;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+/* Fix untuk DataTables wrapper */
+.dataTables_wrapper {
+  overflow-x: auto;
+}
+
+.dataTables_scrollHead,
+.dataTables_scrollBody {
+  overflow: visible !important;
+}
+
+.dataTables_scrollHeadInner,
+.dataTables_scrollBody table {
+  width: 100% !important;
+}
+
+/* Kolom Nama Dokumen pakai ellipsis */
+#tableCari td:nth-child(3) a {
+  display: inline-block;
+  max-width: 320px;
+  /* batas lebar kolom */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  color: #007bff;
+  text-decoration: none;
+}
+
+/* Saat hover, tunjukkan kursor pointer */
+#tableCari td:nth-child(3) a:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Kolom Deskripsi pakai ellipsis juga */
+#tableCari td:nth-child(4) {
+  max-width: 160px;           /* sesuaikan dengan lebar kolom */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+
+/* Saat hover tampilkan tooltip deskripsi penuh */
+#tableCari td:nth-child(4)[title] {
+  cursor: help;
+}
+
+#tableCari td:nth-child(3) {
+  min-width: 0;
+}

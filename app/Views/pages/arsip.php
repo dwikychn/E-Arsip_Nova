@@ -73,7 +73,7 @@
                                     <td><?= $no++ ?>.</td>
                                     <td>
                                         <a href="#" class="preview-link text-primary"
-                                            data-file="<?= base_url('uploads/' . $a['nama_dep'] . '/' . $a['file_arsip']) ?>"
+                                            data-file="<?= base_url('arsip/preview/' . $a['id_arsip']) ?>"
                                             data-nama="<?= esc($a['file_arsip']) ?>">
                                             <?= esc($a['file_arsip']) ?>
                                         </a>

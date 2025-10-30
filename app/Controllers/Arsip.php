@@ -321,27 +321,34 @@ class Arsip extends BaseController
         return redirect()->to('/arsip')->with('pesan_arsip', 'Arsip berhasil diupdate.');
     }
 
-    public function preview($id)
-    {
-        $arsip = $this->Model_arsip->find($id);
-        if (!$arsip) {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('File tidak ditemukan');
-        }
-
-        $filePath = FCPATH . $arsip['path_arsip'] . $arsip['file_arsip'];
-        if (!file_exists($filePath)) {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('File tidak ditemukan');
-        }
-
-        $mime = mime_content_type($filePath);
-        $allowed = ['application/pdf', 'image/jpeg', 'image/png', 'image/gif'];
-
-        if (in_array($mime, $allowed)) {
-            return $this->response->setHeader('Content-Type', $mime)
-                ->setHeader('Content-Disposition', 'inline; filename="' . basename($filePath) . '"')
-                ->setBody(file_get_contents($filePath));
-        } else {
-            return redirect()->to(base_url($arsip['path_arsip'] . $arsip['file_arsip']));
-        }
+public function preview($id)
+{
+    $arsip = $this->Model_arsip->find($id);
+    if (!$arsip) {
+        throw new \CodeIgniter\Exceptions\PageNotFoundException('File tidak ditemukan');
     }
+
+    $filePath = FCPATH . $arsip['path_arsip'] . $arsip['file_arsip'];
+    if (!file_exists($filePath)) {
+        throw new \CodeIgniter\Exceptions\PageNotFoundException('File tidak ditemukan');
+    }
+
+    $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+    $mime = mime_content_type($filePath);
+
+    // === Jika PDF → buka langsung di browser (Chrome/Edge)
+    if ($ext === 'pdf') {
+        return $this->response
+            ->setHeader('Content-Type', 'application/pdf')
+            ->setHeader('Content-Disposition', 'inline; filename="' . basename($filePath) . '"')
+            ->setBody(file_get_contents($filePath));
+    }
+
+    // === Jika docx, xlsx, gambar, dan lainnya → otomatis download
+    return $this->response
+        ->setHeader('Content-Type', $mime)
+        ->setHeader('Content-Disposition', 'attachment; filename="' . basename($filePath) . '"')
+        ->setBody(file_get_contents($filePath));
+}
+
 }

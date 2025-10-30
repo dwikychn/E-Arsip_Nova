@@ -19,7 +19,7 @@
         <?= csrf_field() ?>
 
         <div class="table-responsive">
-          <table id="tableCari" class="table table-bordered table-striped table-hover" width="100%">
+          <table id="tableCari" class="table table-bordered table-striped table-hover" style="width:100%">
             <thead>
               <tr>
                 <th><input type="checkbox" id="selectAll"></th>
@@ -92,16 +92,18 @@
                     <?php if ($allowed): ?>
                       <a href="#" class="preview-link text-primary fw-semibold"
                         data-file="<?= $pathFile ?>"
-                        data-nama="<?= esc($a['file_arsip']) ?>">
+                        data-nama="<?= esc($a['file_arsip']) ?>"
+                        title="<?= esc($a['file_arsip']) ?>"> <!-- tooltip -->
                         <?= esc($a['file_arsip']) ?>
                       </a>
+
                     <?php else: ?>
                       <span class="text-muted"><?= esc($a['file_arsip']) ?></span>
                       <small class="badge bg-danger">Terbatas</small>
                     <?php endif; ?>
                   </td>
 
-                  <td><?= esc($a['deskripsi']) ?></td>
+                  <td title="<?= esc($a['deskripsi']) ?>"><?= esc($a['deskripsi']) ?></td>
                   <td><?= esc($a['nama_dep']) ?></td>
                   <td><?= esc($a['nama_kategori']) ?></td>
 
@@ -142,119 +144,9 @@
   </div>
 </section>
 
-<style>
-  #tableCari_wrapper {
-    overflow-x: auto !important;
-  }
-
-  #tableCari th,
-  #tableCari td {
-    white-space: nowrap;
-    vertical-align: middle;
-  }
-
-  #tableCari th:first-child,
-  #tableCari td:first-child {
-    text-align: center;
-    width: 30px !important;
-  }
-
-  .table>tbody>tr:hover {
-    background-color: #f5faff;
-  }
-
-  .filters input {
-    width: 100%;
-    padding: 3px 6px;
-    font-size: 13px;
-    box-sizing: border-box;
-  }
-</style>
-
+<link rel="stylesheet" href="<?= base_url('template/custom/css/cari.css') ?>">
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
-<script>
-  $(function() {
-    const $table = $('#tableCari');
-
-    // === Setup DataTable ===
-    $table.find('thead tr').clone(true).addClass('filters').appendTo($table.find('thead'));
-    const table = $table.DataTable({
-      orderCellsTop: true,
-      fixedHeader: true,
-      scrollX: true,
-      pageLength: 25,
-      dom: 'l t p r',
-      language: {
-        paginate: {
-          previous: "Previous",
-          next: "Next"
-        },
-        info: ""
-      },
-      initComplete: function() {
-        const api = this.api();
-        api.columns().eq(0).each(function(colIdx) {
-          const cell = $('.filters th').eq(colIdx);
-          if (colIdx === 0) return $(cell).empty();
-
-          $(cell).html('<input type="text" placeholder="Cari" style="width:100%; font-size:12px;">');
-          $('input', cell).on('keyup change clear', function() {
-            if (api.column(colIdx).search() !== this.value) {
-              api.column(colIdx).search(this.value).draw();
-            }
-          });
-        });
-      }
-    });
-
-    // === Checkbox Select All ===
-    $('#selectAll').on('click', function() {
-      $('.checkboxArsip:not(:disabled)').prop('checked', this.checked).trigger('change');
-    });
-
-    // === Tampilkan Tombol Aksi ===
-    $(document).on('change', '.checkboxArsip', function() {
-      $('#actionContainer').toggle($('.checkboxArsip:checked').length > 0);
-    });
-
-    // === Download Selected ===
-    $('#btnDownloadSelected').on('click', function() {
-      const files = $('.checkboxArsip:checked').map(function() {
-        return $(this).data('file');
-      }).get();
-
-      if (files.length) {
-        files.forEach(f => window.open(f, '_blank'));
-      } else {
-        alert('Tidak ada arsip yang bisa diunduh.');
-      }
-    });
-
-    // === Delete Selected ===
-    $('#btnDeleteSelected').on('click', function() {
-      if (confirm('Yakin ingin menghapus arsip terpilih?')) {
-        $('#formHapusMultiple').submit();
-      }
-    });
-
-    // === Preview File ===
-    $(document).on('click', '.preview-link', function(e) {
-      e.preventDefault();
-
-      const fileUrl = $(this).data('file');
-      const fileName = $(this).data('nama');
-      const ext = fileName.split('.').pop().toLowerCase();
-
-      const previewWindow = window.open("", "_blank", "width=900,height=600");
-      if (['pdf', 'jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(ext)) {
-        previewWindow.location.href = fileUrl;
-      } else {
-        const gview = `https://docs.google.com/gview?url=${encodeURIComponent(fileUrl)}&embedded=true`;
-        previewWindow.location.href = gview;
-      }
-    });
-  });
-</script>
+<script src="<?= base_url('template/custom/js/cari.js') ?>"></script>
 <?= $this->endSection() ?>

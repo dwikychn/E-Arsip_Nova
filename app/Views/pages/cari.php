@@ -17,6 +17,7 @@
 
       <form id="formHapusMultiple" method="post" action="<?= base_url('cari/hapus_multiple') ?>">
         <?= csrf_field() ?>
+
         <div class="table-responsive">
           <table id="tableCari" class="table table-bordered table-striped table-hover" width="100%">
             <thead>
@@ -32,24 +33,27 @@
                 <th>Tgl. Update</th>
               </tr>
             </thead>
+
             <tbody>
               <?php
-              $no = 1;
-              $db = \Config\Database::connect();
+              $no      = 1;
+              $db      = \Config\Database::connect();
               $id_dep  = (int) session()->get('id_dep');
               $id_user = (int) session()->get('id_user');
               $level   = (int) session()->get('level');
 
               foreach ($arsip as $a):
-                // 🔒 Cek akses arsip
+                // 🔒 Akses arsip
                 $allowed = false;
+                $klasifikasi = strtolower($a['klasifikasi']);
+
                 if ($level === 0) {
                   $allowed = true;
-                } elseif (strtolower($a['klasifikasi']) === 'umum') {
+                } elseif ($klasifikasi === 'umum') {
                   $allowed = true;
-                } elseif (strtolower($a['klasifikasi']) === 'rahasia' && $a['id_dep'] == $id_dep) {
+                } elseif ($klasifikasi === 'rahasia' && $a['id_dep'] == $id_dep) {
                   $allowed = true;
-                } elseif (strtolower($a['klasifikasi']) === 'terbatas') {
+                } elseif ($klasifikasi === 'terbatas') {
                   if ($a['id_user'] == $id_user) {
                     $allowed = true;
                   } else {
@@ -70,9 +74,8 @@
                   }
                 }
 
-                $depFolder = url_title($a['nama_dep'], '_', true);
                 $cleanPath = preg_replace('#^uploads/#', '', $a['path_arsip']);
-                $pathFile = base_url('uploads/' . $cleanPath . '/' . $a['file_arsip']);
+                $pathFile  = base_url('uploads/' . $cleanPath . '/' . $a['file_arsip']);
               ?>
                 <tr>
                   <td class="text-center">
@@ -88,9 +91,9 @@
                   <td>
                     <?php if ($allowed): ?>
                       <a href="#" class="preview-link text-primary fw-semibold"
-                         data-file="<?= $pathFile ?>"
-                         data-nama="<?= esc($a['file_arsip']) ?>">
-                         <?= esc($a['file_arsip']) ?>
+                        data-file="<?= $pathFile ?>"
+                        data-nama="<?= esc($a['file_arsip']) ?>">
+                        <?= esc($a['file_arsip']) ?>
                       </a>
                     <?php else: ?>
                       <span class="text-muted"><?= esc($a['file_arsip']) ?></span>
@@ -101,17 +104,23 @@
                   <td><?= esc($a['deskripsi']) ?></td>
                   <td><?= esc($a['nama_dep']) ?></td>
                   <td><?= esc($a['nama_kategori']) ?></td>
+
                   <td class="text-center">
-                    <?php if (strtolower($a['klasifikasi']) === 'umum'): ?>
-                      <span class="label label-success" style="font-size:14px;">U</span>
-                    <?php elseif (strtolower($a['klasifikasi']) === 'terbatas'): ?>
-                      <span class="label label-warning" style="font-size:14px;">T</span>
-                    <?php elseif (strtolower($a['klasifikasi']) === 'rahasia'): ?>
-                      <span class="label label-danger" style="font-size:14px;">R</span>
-                    <?php else: ?>
-                      <span class="label label-default"><?= esc($a['klasifikasi']) ?></span>
-                    <?php endif; ?>
+                    <?php
+                    $labelMap = [
+                      'umum'     => ['U', 'success'],
+                      'terbatas' => ['T', 'warning'],
+                      'rahasia'  => ['R', 'danger']
+                    ];
+                    if (isset($labelMap[$klasifikasi])) {
+                      [$labelText, $labelColor] = $labelMap[$klasifikasi];
+                      echo "<span class='label label-{$labelColor}' style='font-size:14px;'>{$labelText}</span>";
+                    } else {
+                      echo "<span class='label label-default'>" . esc($a['klasifikasi']) . "</span>";
+                    }
+                    ?>
                   </td>
+
                   <td><?= esc($a['tgl_upload']) ?></td>
                   <td><?= esc($a['tgl_update']) ?></td>
                 </tr>
@@ -120,7 +129,6 @@
           </table>
         </div>
 
-        <!-- Tombol aksi -->
         <div id="actionContainer" class="text-right mt-3" style="display:none;">
           <button type="button" id="btnDownloadSelected" class="btn btn-success btn-sm">
             <i class="fa fa-download"></i> Download Terpilih
@@ -135,40 +143,62 @@
 </section>
 
 <style>
-  #tableCari_wrapper { overflow-x: auto !important; }
-  #tableCari th, #tableCari td { white-space: nowrap; vertical-align: middle; }
-  #tableCari th:first-child, #tableCari td:first-child { text-align: center; width: 30px !important; }
-  .table>tbody>tr:hover { background-color: #f5faff; }
-  .filters input { width: 100%; padding: 3px 6px; font-size: 13px; box-sizing: border-box; }
+  #tableCari_wrapper {
+    overflow-x: auto !important;
+  }
+
+  #tableCari th,
+  #tableCari td {
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+
+  #tableCari th:first-child,
+  #tableCari td:first-child {
+    text-align: center;
+    width: 30px !important;
+  }
+
+  .table>tbody>tr:hover {
+    background-color: #f5faff;
+  }
+
+  .filters input {
+    width: 100%;
+    padding: 3px 6px;
+    font-size: 13px;
+    box-sizing: border-box;
+  }
 </style>
 
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
 <script>
-  $(document).ready(function() {
+  $(function() {
     const $table = $('#tableCari');
 
-    // 🔍 Setup DataTable dengan filter
+    // === Setup DataTable ===
     $table.find('thead tr').clone(true).addClass('filters').appendTo($table.find('thead'));
     const table = $table.DataTable({
       orderCellsTop: true,
       fixedHeader: true,
       scrollX: true,
       pageLength: 25,
-      dom: 'l t p r', // 🔹 Hilangkan search global & info "Showing x to y"
+      dom: 'l t p r',
       language: {
         paginate: {
           previous: "Previous",
           next: "Next"
         },
-        info: "", // 🔹 Kosongkan info
+        info: ""
       },
       initComplete: function() {
         const api = this.api();
         api.columns().eq(0).each(function(colIdx) {
           const cell = $('.filters th').eq(colIdx);
-          if (colIdx === 0) return $(cell).html('');
+          if (colIdx === 0) return $(cell).empty();
+
           $(cell).html('<input type="text" placeholder="Cari" style="width:100%; font-size:12px;">');
           $('input', cell).on('keyup change clear', function() {
             if (api.column(colIdx).search() !== this.value) {
@@ -179,21 +209,22 @@
       }
     });
 
-    // ✅ Checkbox select all
+    // === Checkbox Select All ===
     $('#selectAll').on('click', function() {
       $('.checkboxArsip:not(:disabled)').prop('checked', this.checked).trigger('change');
     });
 
-    // ✅ Tampilkan tombol aksi
+    // === Tampilkan Tombol Aksi ===
     $(document).on('change', '.checkboxArsip', function() {
       $('#actionContainer').toggle($('.checkboxArsip:checked').length > 0);
     });
 
-    // ✅ Download selected
-    $('#btnDownloadSelected').click(function() {
+    // === Download Selected ===
+    $('#btnDownloadSelected').on('click', function() {
       const files = $('.checkboxArsip:checked').map(function() {
         return $(this).data('file');
       }).get();
+
       if (files.length) {
         files.forEach(f => window.open(f, '_blank'));
       } else {
@@ -201,19 +232,21 @@
       }
     });
 
-    // ✅ Delete selected
-    $('#btnDeleteSelected').click(function() {
+    // === Delete Selected ===
+    $('#btnDeleteSelected').on('click', function() {
       if (confirm('Yakin ingin menghapus arsip terpilih?')) {
         $('#formHapusMultiple').submit();
       }
     });
 
-    // ✅ Preview inline
+    // === Preview File ===
     $(document).on('click', '.preview-link', function(e) {
       e.preventDefault();
+
       const fileUrl = $(this).data('file');
       const fileName = $(this).data('nama');
       const ext = fileName.split('.').pop().toLowerCase();
+
       const previewWindow = window.open("", "_blank", "width=900,height=600");
       if (['pdf', 'jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(ext)) {
         previewWindow.location.href = fileUrl;

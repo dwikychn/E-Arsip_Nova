@@ -1,7 +1,12 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>E-Arsip | Bantuan </title>
+    <title>
+        E-Arsip |
+        <?= isset($page)
+            ? ucfirst($page)
+            : (isset($title) ? esc($title) : 'Dashboard') ?>
+    </title>
     <link rel="icon" type="image/png" sizes="150x150" href="<?= base_url('template/dist/img/Logo-Nova.png') ?>">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 

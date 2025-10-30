@@ -60,7 +60,7 @@
 
         api.columns().eq(0).each(function(colIdx) {
           const cell = $('.filters th').eq(colIdx);
-          if (colIdx === 0) return $(cell).empty();
+          if (colIdx === 0 || colIdx === 1) return $(cell).empty();
 
           $(cell).html('<input type="text" placeholder="Cari" style="width:100%; font-size:12px;">');
           $('input', cell).on('keyup change clear', function() {

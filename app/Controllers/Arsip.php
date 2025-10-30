@@ -79,6 +79,7 @@ class Arsip extends BaseController
         $kategoriList = $this->request->getPost('id_kategori');
         $klasifikasiList = $this->request->getPost('klasifikasi');
         $deskripsiList = $this->request->getPost('deskripsi');
+        $namaArsipList = $this->request->getPost('nama_arsip');
         $aksesDepList = $this->request->getPost('akses_dep') ?? [];
         $aksesUserList = $this->request->getPost('akses_user') ?? [];
         $aksesUserGlobalList = $this->request->getPost('akses_user_global') ?? [];
@@ -99,6 +100,7 @@ class Arsip extends BaseController
             $idKategori = (int) ($kategoriList[$index] ?? 0);
             $klasifikasi = ucfirst(strtolower($klasifikasiList[$index] ?? 'Umum'));
             $deskripsi = $deskripsiList[$index] ?? null;
+            $namaArsipInput = trim($namaArsipList[$index] ?? '');
 
             $idDep = $isSuper
                 ? (int) ($idDepList[$index] ?? 0)
@@ -134,9 +136,15 @@ class Arsip extends BaseController
 
             $originalName = pathinfo($file->getClientName(), PATHINFO_FILENAME);
             $ext = $file->getExtension();
-            $safeName = url_title($originalName, '_', true);
-            $newName = $safeName . '_' . bin2hex(random_bytes(3)) . '.' . strtolower($ext);
 
+            // 🧠 logika rename baru:
+            if ($namaArsipInput !== '') {
+                $safeName = url_title($namaArsipInput, '_', true);
+            } else {
+                $safeName = url_title($originalName, '_', true);
+            }
+
+            $newName = $safeName . '_' . bin2hex(random_bytes(3)) . '.' . strtolower($ext);
             $file->move($uploadPath, $newName);
 
             $dataSimpan = [
@@ -321,34 +329,33 @@ class Arsip extends BaseController
         return redirect()->to('/arsip')->with('pesan_arsip', 'Arsip berhasil diupdate.');
     }
 
-public function preview($id)
-{
-    $arsip = $this->Model_arsip->find($id);
-    if (!$arsip) {
-        throw new \CodeIgniter\Exceptions\PageNotFoundException('File tidak ditemukan');
-    }
+    public function preview($id)
+    {
+        $arsip = $this->Model_arsip->find($id);
+        if (!$arsip) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException('File tidak ditemukan');
+        }
 
-    $filePath = FCPATH . $arsip['path_arsip'] . $arsip['file_arsip'];
-    if (!file_exists($filePath)) {
-        throw new \CodeIgniter\Exceptions\PageNotFoundException('File tidak ditemukan');
-    }
+        $filePath = FCPATH . $arsip['path_arsip'] . $arsip['file_arsip'];
+        if (!file_exists($filePath)) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException('File tidak ditemukan');
+        }
 
-    $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
-    $mime = mime_content_type($filePath);
+        $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+        $mime = mime_content_type($filePath);
 
-    // === Jika PDF → buka langsung di browser (Chrome/Edge)
-    if ($ext === 'pdf') {
+        // === Jika PDF → buka langsung di browser (Chrome/Edge)
+        if ($ext === 'pdf') {
+            return $this->response
+                ->setHeader('Content-Type', 'application/pdf')
+                ->setHeader('Content-Disposition', 'inline; filename="' . basename($filePath) . '"')
+                ->setBody(file_get_contents($filePath));
+        }
+
+        // === Jika docx, xlsx, gambar, dan lainnya → otomatis download
         return $this->response
-            ->setHeader('Content-Type', 'application/pdf')
-            ->setHeader('Content-Disposition', 'inline; filename="' . basename($filePath) . '"')
+            ->setHeader('Content-Type', $mime)
+            ->setHeader('Content-Disposition', 'attachment; filename="' . basename($filePath) . '"')
             ->setBody(file_get_contents($filePath));
     }
-
-    // === Jika docx, xlsx, gambar, dan lainnya → otomatis download
-    return $this->response
-        ->setHeader('Content-Type', $mime)
-        ->setHeader('Content-Disposition', 'attachment; filename="' . basename($filePath) . '"')
-        ->setBody(file_get_contents($filePath));
-}
-
 }

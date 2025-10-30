@@ -144,6 +144,8 @@
     const BASE_URL = "<?= base_url() ?>";
     const kategoriList = <?= json_encode($kategori) ?>;
     const departemenList = <?= json_encode($departemen) ?>;
+    const usersList = <?= json_encode($users) ?>;
+    const userLevel = <?= session()->get('level') ?>;
 </script>
 
 <?= $this->include('modal/modal_arsip_add') ?>

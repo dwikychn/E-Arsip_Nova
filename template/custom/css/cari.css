@@ -14,14 +14,16 @@
   box-sizing: border-box !important;
 }
 
-/* Lebar kolom tetap */
+/* Kolom No */
 #tableCari th:nth-child(1),
 #tableCari td:nth-child(1) {
-  width: 40px;
-  min-width: 40px;
-  max-width: 40px;
+  width: 30px;
+  min-width: 30px;
+  max-width: 30px;
+  text-align: center;
 }
 
+/* Kolom Checkbox / No Urut */
 #tableCari th:nth-child(2),
 #tableCari td:nth-child(2) {
   width: 50px;
@@ -29,13 +31,15 @@
   max-width: 50px;
 }
 
+/* Kolom Nama Dokumen */
 #tableCari th:nth-child(3),
 #tableCari td:nth-child(3) {
-  width: 250px;
-  min-width: 250px;
-  max-width: 250px;
+  width: 300px;
+  min-width: 300px;
+  max-width: 300px;
 }
 
+/* Kolom Deskripsi */
 #tableCari th:nth-child(4),
 #tableCari td:nth-child(4) {
   width: 200px;
@@ -43,13 +47,16 @@
   max-width: 200px;
 }
 
+/* Kolom Departemen */
 #tableCari th:nth-child(5),
 #tableCari td:nth-child(5) {
-  width: 150px;
-  min-width: 150px;
-  max-width: 150px;
+  width: 80px;
+  min-width: 80px;
+  max-width: 80px;
+  text-align: center;
 }
 
+/* Kolom Kategori */
 #tableCari th:nth-child(6),
 #tableCari td:nth-child(6) {
   width: 150px;
@@ -57,13 +64,16 @@
   max-width: 150px;
 }
 
+/* 🟩 Kolom Klasifikasi */
 #tableCari th:nth-child(7),
 #tableCari td:nth-child(7) {
-  width: 100px;
-  min-width: 100px;
-  max-width: 100px;
+  width: 80px;
+  min-width: 80px;
+  max-width: 80px;
+  text-align: center;
 }
 
+/* Kolom Tanggal Upload */
 #tableCari th:nth-child(8),
 #tableCari td:nth-child(8) {
   width: 120px;
@@ -71,12 +81,14 @@
   max-width: 120px;
 }
 
+/* Kolom Tanggal Update */
 #tableCari th:nth-child(9),
 #tableCari td:nth-child(9) {
   width: 120px;
   min-width: 120px;
   max-width: 120px;
 }
+
 
 .table > tbody > tr:hover {
   background-color: #f5faff;
@@ -106,15 +118,15 @@
 
 /* Kolom Nama Dokumen pakai ellipsis */
 #tableCari td:nth-child(3) a {
-  display: inline-block;
-  max-width: 320px;
-  /* batas lebar kolom */
+  display: block;              /* ubah inline-block jadi block */
+  width: 100%;                 /* pastikan ikut lebar kolom */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   vertical-align: middle;
   color: #007bff;
   text-decoration: none;
+  box-sizing: border-box;
 }
 
 /* Saat hover, tunjukkan kursor pointer */
@@ -137,6 +149,3 @@
   cursor: help;
 }
 
-#tableCari td:nth-child(3) {
-  min-width: 0;
-}

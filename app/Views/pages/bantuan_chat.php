@@ -132,13 +132,37 @@
 
     <!-- SIDEBAR -->
     <div class="chat-sidebar">
-        <h4>Daftar Admin</h4>
+        <h4>
+            <?= (session()->get('level') == 0) ? 'Daftar Admin' : 'Daftar Percakapan'; ?>
+        </h4>
+
         <ul class="user-list">
-            <?php foreach($listSidebar as $row): ?>
-                <li class="<?= ($row['id'] == $currentID) ? 'active' : '' ?>">
-                    <a href="<?= base_url('/bantuan/chat/' . $row['id']) ?>">
-                        <?= $row['label'] ?>
-                    </a>
+            <?php foreach ($listSidebar as $sb): ?>
+                <li class="<?= ($sb['id'] == $currentID || urldecode($sb['id']) == $currentSubjek) ? 'active' : '' ?>">
+                    
+                    <?php if (session()->get('level') == 0): ?>
+                        <!-- Superadmin → klik berdasarkan ID admin -->
+                        <a href="/bantuan/chat/<?= $sb['id'] ?>"
+                           class="sidebar-item"
+                           style="display:block; padding:8px;">
+                            <?= $sb['label'] ?>
+                        </a>
+
+                    <?php else: ?>
+                        <!-- ✅ Admin → klik berdasarkan subjek -->
+                        <a href="/bantuan/chat/<?= $currentID ?>/<?= $sb['id'] ?>"
+                           class="sidebar-item"
+                           style="display:flex; justify-content:space-between; padding:8px;">
+                            <span><?= $sb['label'] ?></span>
+
+                            <?php if ($sb['status'] == 0): ?>
+                                <span style="color:red; font-size:12px;">• Belum selesai</span>
+                            <?php else: ?>
+                                <span style="color:green; font-size:12px;">✓ Selesai</span>
+                            <?php endif; ?>
+                        </a>
+                    <?php endif; ?>
+
                 </li>
             <?php endforeach; ?>
         </ul>
@@ -148,10 +172,31 @@
         <?php endif; ?>
     </div>
 
+
     <!-- AREA CHAT -->
     <div class="chat-body">
         <h4><?= $currentSubjek ?: "Percakapan Baru" ?></h4>
-
+        <div style="background: #fff3cd; padding: 15px; margin: 10px 0; border: 2px solid #ffc107; border-radius: 5px; font-size: 13px;">
+        <strong>🔍 Debug Info:</strong><br>
+        ID User Login: <?= session()->get('id_user') ?><br>
+        Level: <?= session()->get('level') ?><br>
+        Current ID Target: <?= $currentID ?><br>
+        Current Subjek: <strong><?= $currentSubjek ?></strong><br>
+        Total Chat: <strong><?= count($chat) ?></strong><br>
+        
+        <?php if(!empty($chat)): ?>
+            <hr style="margin: 8px 0;">
+            Chat pertama:<br>
+            - ID Pengirim: <?= $chat[0]['id_pengirim'] ?><br>
+            - ID Penerima: <?= $chat[0]['id_penerima'] ?><br>
+            - Subjek: <?= $chat[0]['subjek'] ?><br>
+            - Pesan: <?= $chat[0]['pesan'] ?>
+        <?php else: ?>
+            <hr style="margin: 8px 0;">
+            <span style="color: red;">❌ Array chat kosong!</span>
+        <?php endif; ?>
+    </div>
+    <!-- AKHIR DEBUG -->
         <div class="chat-messages">
             <?php if(!empty($chat)): ?>
                 <?php foreach($chat as $c): ?>
@@ -164,17 +209,28 @@
         </div>
 
         <form action="<?= base_url('/bantuan/kirim') ?>" method="post" class="chat-input">
-            <input type="hidden" name="penerima" value="<?= $currentID ?>">
+            <?php 
+            // ✅ PERBAIKAN: Pastikan id_tujuan selalu terisi
+            $idTujuan = (session()->get('level') == 0) ? $currentID : $this->bantuanModel->getSuperadminID();
+            ?>
+            <input type="hidden" name="id_tujuan" value="<?= $idTujuan ?>">
+            
+            <!-- DEBUG - HAPUS NANTI -->
+            <input type="hidden" name="debug_level" value="<?= session()->get('level') ?>">
+            <input type="hidden" name="debug_current_id" value="<?= $currentID ?>">
+            
             <input type="text" name="pesan" placeholder="Ketik pesan..." required>
-            <button type="submit">Kirim</button>
-        </form>
 
+        <?php if(session()->get('level') == 0): ?>
+        <a href="/bantuan/closeSubjek?subjek=<?= urlencode($currentSubjek) ?>" class="btn btn-sm btn-success" style="margin-top:10px;">
+            Tandai Selesai
+        </a>
+        <?php endif; ?>
     </div>
 </div>
 <script>
-// Scroll otomatis ke bawah
-var box = document.getElementById('messages');
-box.scrollTop = box.scrollHeight;
+    const box = document.querySelector('.chat-messages');
+    box.scrollTop = box.scrollHeight;
 </script>
 
 <?= $this->endSection() ?>

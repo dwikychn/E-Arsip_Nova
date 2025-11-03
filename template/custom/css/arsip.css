@@ -1,0 +1,169 @@
+/* Hapus semua border collapse bawaan */
+#tableArsip {
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  width: 100% !important;
+}
+
+/* Sama ratakan padding untuk semua cell */
+#tableArsip th,
+#tableArsip td {
+  padding: 8px !important;
+  border: 1px solid #ddd !important;
+  vertical-align: middle !important;
+  box-sizing: border-box !important;
+}
+
+/* Kolom Checkbox */
+#tableArsip th:nth-child(1),
+#tableArsip td:nth-child(1) {
+  width: 30px;
+  min-width: 30px;
+  max-width: 30px;
+  text-align: center;
+}
+
+/* Kolom No */
+#tableArsip th:nth-child(2),
+#tableArsip td:nth-child(2) {
+  width: 50px;
+  min-width: 50px;
+  max-width: 50px;
+  text-align: center;
+}
+
+/* Kolom Nama File */
+#tableArsip th:nth-child(3),
+#tableArsip td:nth-child(3) {
+  width: 300px;
+  min-width: 300px;
+  max-width: 300px;
+}
+
+/* Kolom Kategori */
+#tableArsip th:nth-child(4),
+#tableArsip td:nth-child(4) {
+  width: 150px;
+  min-width: 150px;
+  max-width: 150px;
+}
+
+/* Kolom Klasifikasi */
+#tableArsip th:nth-child(5),
+#tableArsip td:nth-child(5) {
+  width: 80px;
+  min-width: 80px;
+  max-width: 80px;
+  text-align: center;
+}
+
+/* Kolom User Upload */
+#tableArsip th:nth-child(6),
+#tableArsip td:nth-child(6) {
+  width: 150px;
+  min-width: 150px;
+  max-width: 150px;
+}
+
+/* Kolom Tgl. Upload */
+#tableArsip th:nth-child(7),
+#tableArsip td:nth-child(7) {
+  width: 120px;
+  min-width: 120px;
+  max-width: 120px;
+}
+
+/* Kolom Tgl. Update */
+#tableArsip th:nth-child(8),
+#tableArsip td:nth-child(8) {
+  width: 120px;
+  min-width: 120px;
+  max-width: 120px;
+}
+
+/* Kolom Ukuran */
+#tableArsip th:nth-child(9),
+#tableArsip td:nth-child(9) {
+  width: 80px;
+  min-width: 80px;
+  max-width: 80px;
+  text-align: center;
+}
+
+/* Kolom Aksi */
+#tableArsip th:nth-child(10),
+#tableArsip td:nth-child(10) {
+  width: 100px;
+  min-width: 100px;
+  max-width: 100px;
+  text-align: center;
+}
+
+/* Hover effect */
+#tableArsip > tbody > tr:hover {
+  background-color: #f5faff;
+}
+
+/* Baris filter di header */
+#tableArsip thead .filters th {
+  background-color: #f9f9f9 !important;
+  border-bottom: 2px solid #ddd !important;
+  padding: 4px !important;
+}
+
+/* Filter inputs */
+.filters input {
+  width: 100%;
+  padding: 4px 6px;
+  font-size: 12px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+.filters input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Fix untuk DataTables wrapper */
+.dataTables_wrapper {
+  overflow-x: auto;
+}
+
+.dataTables_scrollHead,
+.dataTables_scrollBody {
+  overflow: visible !important;
+}
+
+.dataTables_scrollHeadInner,
+.dataTables_scrollBody table {
+  width: 100% !important;
+}
+
+/* Kolom Nama File pakai ellipsis */
+#tableArsip td:nth-child(3) a {
+  display: block;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  color: #3998ff;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+/* Saat hover, tunjukkan kursor pointer */
+#tableArsip td:nth-child(3) a:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Kolom User Upload dengan ellipsis */
+#tableArsip td:nth-child(6) {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

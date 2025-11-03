@@ -370,33 +370,43 @@ class Arsip extends BaseController
         return redirect()->to('/arsip')->with('pesan_arsip', 'Arsip berhasil diperbarui.');
     }
 
-    public function preview($id)
-    {
-        $arsip = $this->Model_arsip->find($id);
-        if (!$arsip) {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('File tidak ditemukan');
-        }
-
-        $filePath = FCPATH . $arsip['path_arsip'] . $arsip['file_arsip'];
-        if (!file_exists($filePath)) {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('File tidak ditemukan');
-        }
-
-        $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
-        $mime = mime_content_type($filePath);
-
-        // === Jika PDF → buka langsung di browser (Chrome/Edge)
-        if ($ext === 'pdf') {
-            return $this->response
-                ->setHeader('Content-Type', 'application/pdf')
-                ->setHeader('Content-Disposition', 'inline; filename="' . basename($filePath) . '"')
-                ->setBody(file_get_contents($filePath));
-        }
-
-        // === Jika docx, xlsx, gambar, dan lainnya → otomatis download
-        return $this->response
-            ->setHeader('Content-Type', $mime)
-            ->setHeader('Content-Disposition', 'attachment; filename="' . basename($filePath) . '"')
-            ->setBody(file_get_contents($filePath));
+public function preview($id)
+{
+    $arsip = $this->Model_arsip->find($id);
+    if (!$arsip) {
+        throw new \CodeIgniter\Exceptions\PageNotFoundException('File tidak ditemukan');
     }
+
+    $filePath = FCPATH . $arsip['path_arsip'] . $arsip['file_arsip'];
+    if (!file_exists($filePath)) {
+        throw new \CodeIgniter\Exceptions\PageNotFoundException('File tidak ditemukan di server');
+    }
+
+    $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+
+    // MIME types yang bisa dibuka langsung di browser
+    $mimeTypes = [
+        'pdf'  => 'application/pdf',
+        'jpg'  => 'image/jpeg',
+        'jpeg' => 'image/jpeg',
+        'png'  => 'image/png',
+        'gif'  => 'image/gif',
+        'webp' => 'image/webp',
+        'bmp'  => 'image/bmp',
+        'svg'  => 'image/svg+xml',
+        'txt'  => 'text/plain',
+        'html' => 'text/html',
+        'htm'  => 'text/html',
+    ];
+
+    $mime = $mimeTypes[$ext] ?? 'application/octet-stream';
+
+    // ✅ Set header "inline" agar dibuka di browser
+    return $this->response
+        ->setHeader('Content-Type', $mime)
+        ->setHeader('Content-Disposition', 'inline; filename="' . $arsip['file_arsip'] . '"')
+        ->setHeader('Content-Length', filesize($filePath))
+        ->setBody(file_get_contents($filePath));
+}
+    
 }

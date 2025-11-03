@@ -53,5 +53,6 @@ $routes->get('/user/byDepartemen/(:num)', 'User::byDepartemen/$1');
 $routes->get('cari/stream/(:num)', 'Cari::stream/$1');
 $routes->get('bantuan', 'Bantuan::index');
 $routes->get('bantuan/chat/(:num)', 'Bantuan::chat/$1');
+$routes->get('/bantuan/chat/(:num)/(:any)', 'Bantuan::chat/$1/$2');
 $routes->post('bantuan/kirim', 'Bantuan::kirim');
 $routes->get('bantuan/refreshChat/(:num)', 'Bantuan::refreshChat/$1');

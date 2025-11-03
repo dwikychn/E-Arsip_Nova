@@ -148,6 +148,13 @@
     const userLevel = <?= session()->get('level') ?>;
 </script>
 
+<?= $this->section('styles') ?>
+<link rel="stylesheet" href="<?= base_url('template/custom/css/arsip.css') ?>">
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script src="<?= base_url('template/custom/js/arsip.js') ?>"></script>
+<?= $this->endSection() ?>
 <?= $this->include('modal/modal_arsip_add') ?>
 <?= $this->include('modal/modal_cari_preview') ?>
 <?= $this->include('modal/modal_arsip_edit') ?>

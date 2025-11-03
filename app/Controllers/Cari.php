@@ -52,50 +52,88 @@ class Cari extends BaseController
         return view('pages/cari_arsip', $data);
     }
 
-    // ===============================
-    // 🧾 Preview Arsip
-    // ===============================
-    public function preview($id)
-    {
-        $id_dep  = (int) session()->get('id_dep');
-        $id_user = (int) session()->get('id_user');
-        $level   = (int) session()->get('level');
+public function preview($id)
+{
+    $id_dep  = (int) session()->get('id_dep');
+    $id_user = (int) session()->get('id_user');
+    $level   = (int) session()->get('level');
 
-        $arsip = $this->Model_arsip->find($id);
-        if (!$arsip) {
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
-        }
-
-        if (!$this->isAllowed($arsip)) {
-            return redirect()->to('/cari')->with('error_cari', ['Anda tidak punya akses untuk melihat arsip ini.']);
-        }
-
-        // 📂 Bangun path folder arsip
-        $depRow = $this->db->table('tbl_dep')->where('id_dep', $arsip['id_dep'])->get()->getRowArray();
-        $departemenFolder = $depRow ? url_title($depRow['nama_dep'], '_', true) : 'unknown_dep';
-        $kategoriPath = $this->getKategoriPath($arsip['id_kategori']);
-
-        $filePath = ROOTPATH . 'uploads/' . $departemenFolder . '/' . $kategoriPath . '/' . $arsip['file_arsip'];
-
-        if (!file_exists($filePath)) {
-            return $this->response->setStatusCode(404)
-                ->setBody('❌ File tidak ditemukan di server: ' . $filePath);
-        }
-
-        $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
-        $mime = [
-            'pdf' => 'application/pdf',
-            'jpg' => 'image/jpeg',
-            'jpeg' => 'image/jpeg',
-            'png' => 'image/png',
-            'gif' => 'image/gif'
-        ][$ext] ?? 'application/octet-stream';
-
-        return $this->response
-            ->setHeader('Content-Type', $mime)
-            ->setHeader('Content-Disposition', 'inline; filename="' . $arsip['file_arsip'] . '"')
-            ->setBody(file_get_contents($filePath));
+    $arsip = $this->Model_arsip->find($id);
+    if (!$arsip) {
+        return $this->response->setStatusCode(404)->setBody('File tidak ditemukan.');
     }
+
+    // Cek klasifikasi
+    $klasifikasi = strtolower($arsip['klasifikasi']);
+
+    // ❌ File Rahasia tetap tidak boleh
+    if ($klasifikasi === 'rahasia') {
+        return redirect()->to('/cari')->with('error_cari', ['File rahasia tidak dapat diakses dari halaman pencarian.']);
+    }
+
+    // ✅ File Terbatas → cek akses
+    if ($klasifikasi === 'terbatas') {
+        $allowed = ($level === 0 || $arsip['id_user'] == $id_user);
+        if (!$allowed) {
+            $cek = $this->db->table('tbl_arsip_akses')
+                ->where('id_arsip', $arsip['id_arsip'])
+                ->groupStart()
+                    ->groupStart()
+                        ->where('tipe_akses', 'departemen')
+                        ->where('id_dep', $id_dep)
+                    ->groupEnd()
+                    ->orGroupStart()
+                        ->where('tipe_akses', 'user')
+                        ->where('id_user', $id_user)
+                    ->groupEnd()
+                ->groupEnd()
+                ->countAllResults();
+            if ($cek == 0) {
+                return redirect()->to('/cari')->with('error_cari', ['Anda tidak memiliki akses ke file ini.']);
+            }
+        }
+    }
+
+    // Lokasi file
+    $filePath = FCPATH . $arsip['path_arsip'] . $arsip['file_arsip'];
+    if (!file_exists($filePath)) {
+        return $this->response->setStatusCode(404)->setBody('File tidak ditemukan di server');
+    }
+
+    $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+
+    // MIME yang bisa dibuka langsung
+    $mimeTypes = [
+        'pdf'  => 'application/pdf',
+        'jpg'  => 'image/jpeg',
+        'jpeg' => 'image/jpeg',
+        'png'  => 'image/png',
+        'gif'  => 'image/gif',
+        'webp' => 'image/webp',
+        'bmp'  => 'image/bmp',
+        'svg'  => 'image/svg+xml',
+        'txt'  => 'text/plain',
+        'html' => 'text/html',
+        'htm'  => 'text/html',
+    ];
+
+    $mime = $mimeTypes[$ext] ?? 'application/octet-stream';
+
+    // ✅ STREAM FILE (tanpa load ke RAM)
+    $this->response->setHeader('Content-Type', $mime);
+    $this->response->setHeader('Content-Disposition', 'inline; filename="' . $arsip['file_arsip'] . '"');
+    $this->response->setHeader('Content-Length', filesize($filePath));
+    $this->response->noCache();
+
+    // Bersihkan output buffer sebelum streaming
+    if (ob_get_length()) {
+        ob_end_clean();
+    }
+
+    readfile($filePath);
+    exit;
+}
+
 
     // ===============================
     // 🧭 Stream file (dipanggil oleh fetch)
@@ -229,4 +267,5 @@ class Cari extends BaseController
 
         return false;
     }
+    
 }

@@ -1,162 +1,111 @@
-  $(function() {
-    const $table = $('#tableCari');
+$(document).ready(function() {
+  const $table = $('#tableCari');
 
-    // === Setup DataTable tanpa scrollX ===
-    $table.find('thead tr').clone(true).addClass('filters').appendTo($table.find('thead'));
-    const table = $table.DataTable({
-      orderCellsTop: true,
-      fixedHeader: false,
-      scrollX: false, // Matikan scrollX
-      autoWidth: false, // Matikan autoWidth
-      pageLength: 25,
-      dom: 'l t p r',
-      language: {
-        paginate: {
-          previous: "Previous",
-          next: "Next"
-        },
-        info: ""
-      },
-      columnDefs: [{
-          width: '40px',
-          targets: 0,
-          orderable: false
-        },
-        {
-          width: '50px',
-          targets: 1
-        },
-        {
-          width: '250px',
-          targets: 2
-        },
-        {
-          width: '200px',
-          targets: 3
-        },
-        {
-          width: '150px',
-          targets: 4
-        },
-        {
-          width: '150px',
-          targets: 5
-        },
-        {
-          width: '100px',
-          targets: 6
-        },
-        {
-          width: '120px',
-          targets: 7
-        },
-        {
-          width: '120px',
-          targets: 8
-        }
-      ],
-      initComplete: function() {
-        const api = this.api();
-
-        api.columns().eq(0).each(function(colIdx) {
-          const cell = $('.filters th').eq(colIdx);
-          if (colIdx === 0 || colIdx === 1) return $(cell).empty();
-
-          $(cell).html('<input type="text" placeholder="Cari" style="width:100%; font-size:12px;">');
-          $('input', cell).on('keyup change clear', function() {
-            if (api.column(colIdx).search() !== this.value) {
-              api.column(colIdx).search(this.value).draw();
-            }
-          });
-        });
-
-        // Force adjust setelah rendering selesai
-        setTimeout(function() {
-          api.columns.adjust();
-        }, 50);
-      }
-    });
-
-    // === Checkbox Select All ===
-    $('#selectAll').on('click', function() {
-      $('.checkboxArsip:not(:disabled)').prop('checked', this.checked).trigger('change');
-    });
-
-    // === Tampilkan Tombol Aksi ===
-    $(document).on('change', '.checkboxArsip', function() {
-      $('#actionContainer').toggle($('.checkboxArsip:checked').length > 0);
-    });
-
-    // === Download Selected ===
-    $('#btnDownloadSelected').on('click', function() {
-      const files = $('.checkboxArsip:checked').map(function() {
-        return $(this).data('file');
-      }).get();
-
-      if (files.length) {
-        files.forEach(f => {
-          const a = document.createElement('a');
-          a.href = f;
-          a.download = f.split('/').pop();
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-        });
-      } else {
-        alert('Tidak ada arsip yang bisa diunduh.');
-      }
-    });
-
-    // === Delete Selected ===
-    $('#btnDeleteSelected').on('click', function() {
-      if (confirm('Yakin ingin menghapus arsip terpilih?')) {
-        $('#formHapusMultiple').submit();
-      }
-    });
-
-    // === Preview File ===
-$(document).off('click', '.preview-link');
-$(document).on('click', '.preview-link', function (e) {
-  e.preventDefault();
-  e.stopPropagation(); // penting, biar gak trigger event lain
-
-  const fileUrl = $(this).data('file');
-  if (!fileUrl) return alert('⚠️ File tidak ditemukan, Cak.');
-
-  // Buka tab baru langsung, tanpa fetch dulu
-  // Supaya browser anggep ini aksi user, bukan popup liar
-  const win = window.open('', '_blank');
-  if (!win) {
-    alert('🚫 Popup diblokir! Izinkan pop-up untuk situs ini.');
-    return;
+  // === Destroy DataTable lama jika ada ===
+  if ($.fn.DataTable.isDataTable('#tableCari')) {
+    $('#tableCari').DataTable().destroy();
   }
 
-  // Isikan konten HTML sederhana di tab baru (preview fullscreen)
-  win.document.write(`
-    <html>
-      <head>
-        <title>Preview Arsip</title>
-        <style>
-          html, body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-            background: #000;
-          }
-          iframe {
-            border: none;
-            width: 100%;
-            height: 100%;
-          }
-        </style>
-      </head>
-      <body>
-        <iframe src="${fileUrl}" allowfullscreen></iframe>
-      </body>
-    </html>
-  `);
-  win.document.close();
-});
+  // === Hapus baris filter lama (prevent duplicate) ===
+  $table.find('thead .filters').remove();
 
+  // === Clone header untuk filter row ===
+  $table.find('thead tr').clone(true).addClass('filters').appendTo($table.find('thead'));
+
+  // === Setup DataTable ===
+  const table = $table.DataTable({
+    orderCellsTop: true,
+    fixedHeader: false,
+    scrollX: false,
+    autoWidth: false,
+    pageLength: 25,
+    dom: 'l t p r',
+    language: {
+      paginate: {
+        previous: "Previous",
+        next: "Next"
+      },
+      info: ""
+    },
+    columnDefs: [
+      { width: '50px', targets: 0 },
+      { width: '300px', targets: 1 },
+      { width: '200px', targets: 2 },
+      { width: '80px', targets: 3 },
+      { width: '150px', targets: 4 },
+      { width: '80px', targets: 5 },
+      { width: '120px', targets: 6 },
+      { width: '120px', targets: 7 }
+    ],
+    initComplete: function() {
+      const api = this.api();
+
+      api.columns().eq(0).each(function(colIdx) {
+        const cell = $('.filters th').eq(colIdx);
+        
+        // Skip kolom No (0)
+        if (colIdx === 0) {
+          return $(cell).empty();
+        }
+
+        $(cell).html('<input type="text" placeholder="Cari..." style="width:100%; font-size:12px;">');
+        $('input', cell).on('keyup change clear', function() {
+          if (api.column(colIdx).search() !== this.value) {
+            api.column(colIdx).search(this.value).draw();
+          }
+        });
+      });
+
+      // Force adjust setelah rendering selesai
+      setTimeout(function() {
+        api.columns.adjust();
+      }, 50);
+    }
+  });
+
+  // === Preview File ===
+  $(document).off('click', '.preview-link');
+  $(document).on('click', '.preview-link', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const fileUrl = $(this).data('file');
+    const fileName = $(this).data('nama');
+    
+    if (!fileUrl) {
+      alert('⚠️ File tidak ditemukan.');
+      return;
+    }
+
+    const ext = fileName.split('.').pop().toLowerCase();
+
+    // ✅ PDF & Gambar: Buka langsung di tab baru
+    if (['pdf', 'jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'].includes(ext)) {
+      window.open(fileUrl, '_blank');
+      return;
+    }
+
+    // ⚠️ File Office (Excel, Word, PowerPoint): Tampilkan peringatan
+    if (['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'].includes(ext)) {
+      const pesan = `File ${ext.toUpperCase()} tidak dapat di-preview langsung di browser.\n\n` +
+                    `Silakan:\n` +
+                    `1. Download file terlebih dahulu\n` +
+                    `2. Buka dengan Microsoft Office atau LibreOffice\n\n` +
+                    `Klik OK untuk download file.`;
+      
+      if (confirm(pesan)) {
+        window.location.href = fileUrl;
+      }
+      return;
+    }
+
+    // 📄 File teks lainnya
+    if (['txt', 'csv', 'log', 'json', 'xml'].includes(ext)) {
+      window.open(fileUrl, '_blank');
+      return;
+    }
+
+    // 📦 File lain: Langsung download
+    window.location.href = fileUrl;
+  });
 });

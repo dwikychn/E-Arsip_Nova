@@ -17,39 +17,31 @@
 /* Kolom No */
 #tableCari th:nth-child(1),
 #tableCari td:nth-child(1) {
-  width: 30px;
-  min-width: 30px;
-  max-width: 30px;
-  text-align: center;
-}
-
-/* Kolom Checkbox / No Urut */
-#tableCari th:nth-child(2),
-#tableCari td:nth-child(2) {
   width: 50px;
   min-width: 50px;
   max-width: 50px;
+  text-align: center;
 }
 
 /* Kolom Nama Dokumen */
-#tableCari th:nth-child(3),
-#tableCari td:nth-child(3) {
+#tableCari th:nth-child(2),
+#tableCari td:nth-child(2) {
   width: 300px;
   min-width: 300px;
   max-width: 300px;
 }
 
 /* Kolom Deskripsi */
-#tableCari th:nth-child(4),
-#tableCari td:nth-child(4) {
+#tableCari th:nth-child(3),
+#tableCari td:nth-child(3) {
   width: 200px;
   min-width: 200px;
   max-width: 200px;
 }
 
 /* Kolom Departemen */
-#tableCari th:nth-child(5),
-#tableCari td:nth-child(5) {
+#tableCari th:nth-child(4),
+#tableCari td:nth-child(4) {
   width: 80px;
   min-width: 80px;
   max-width: 80px;
@@ -57,16 +49,16 @@
 }
 
 /* Kolom Kategori */
-#tableCari th:nth-child(6),
-#tableCari td:nth-child(6) {
+#tableCari th:nth-child(5),
+#tableCari td:nth-child(5) {
   width: 150px;
   min-width: 150px;
   max-width: 150px;
 }
 
-/* 🟩 Kolom Klasifikasi */
-#tableCari th:nth-child(7),
-#tableCari td:nth-child(7) {
+/* Kolom Klasifikasi */
+#tableCari th:nth-child(6),
+#tableCari td:nth-child(6) {
   width: 80px;
   min-width: 80px;
   max-width: 80px;
@@ -74,6 +66,14 @@
 }
 
 /* Kolom Tanggal Upload */
+#tableCari th:nth-child(7),
+#tableCari td:nth-child(7) {
+  width: 120px;
+  min-width: 120px;
+  max-width: 120px;
+}
+
+/* Kolom Tanggal Update */
 #tableCari th:nth-child(8),
 #tableCari td:nth-child(8) {
   width: 120px;
@@ -81,24 +81,32 @@
   max-width: 120px;
 }
 
-/* Kolom Tanggal Update */
-#tableCari th:nth-child(9),
-#tableCari td:nth-child(9) {
-  width: 120px;
-  min-width: 120px;
-  max-width: 120px;
-}
-
-
-.table > tbody > tr:hover {
+/* Hover effect */
+#tableCari > tbody > tr:hover {
   background-color: #f5faff;
 }
 
+/* Baris filter di header */
+#tableCari thead .filters th {
+  background-color: #f9f9f9 !important;
+  border-bottom: 2px solid #ddd !important;
+  padding: 4px !important;
+}
+
+/* Filter inputs */
 .filters input {
   width: 100%;
-  padding: 3px 6px;
-  font-size: 13px;
+  padding: 4px 6px;
+  font-size: 12px;
   box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+.filters input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
 /* Fix untuk DataTables wrapper */
@@ -117,9 +125,9 @@
 }
 
 /* Kolom Nama Dokumen pakai ellipsis */
-#tableCari td:nth-child(3) a {
-  display: block;              /* ubah inline-block jadi block */
-  width: 100%;                 /* pastikan ikut lebar kolom */
+#tableCari td:nth-child(2) a {
+  display: block;
+  width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -130,14 +138,14 @@
 }
 
 /* Saat hover, tunjukkan kursor pointer */
-#tableCari td:nth-child(3) a:hover {
+#tableCari td:nth-child(2) a:hover {
   text-decoration: underline;
   cursor: pointer;
 }
 
 /* Kolom Deskripsi pakai ellipsis juga */
-#tableCari td:nth-child(4) {
-  max-width: 160px;           /* sesuaikan dengan lebar kolom */
+#tableCari td:nth-child(3) {
+  max-width: 200px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -145,7 +153,6 @@
 }
 
 /* Saat hover tampilkan tooltip deskripsi penuh */
-#tableCari td:nth-child(4)[title] {
+#tableCari td:nth-child(3)[title] {
   cursor: help;
 }
-

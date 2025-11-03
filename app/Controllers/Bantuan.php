@@ -18,71 +18,120 @@ class Bantuan extends BaseController
 
     public function index()
 {
-    // Jika Superadmin
-    if (session()->get('level') == 0) {
+    $level = session()->get('level');
+    $idUser = session()->get('id_user');
 
+    // 🔹 Jika Superadmin → langsung masuk chat admin pertama
+    if ($level == 0) {
         $adminList = $this->bantuanModel->listAdmin();
-
-        // Tambahkan jumlah pesan belum dibaca ke setiap admin
-        foreach ($adminList as &$row) {
-            $row['unread'] = $this->bantuanModel->countUnread($row['id_user']);
+        if (!empty($adminList)) {
+            return redirect()->to('/bantuan/chat/' . $adminList[0]['id_user']);
+        } else {
+            // Jika belum ada admin sama sekali
+            return view('pages/bantuan_chat', [
+                'title' => 'Percakapan',
+                'chat' => [],
+                'currentID' => null,
+                'currentSubjek' => '',
+                'listSidebar' => []
+            ]);
         }
-
-        $data = [
-            'title'     => 'Kotak Pesan',
-            'adminList' => $adminList
-        ];
-        return view('pages/adminbantuan_list', $data);
     }
 
-    // Jika admin → langsung ke chat superadmin
+    // 🔹 Jika Admin → langsung chat ke Superadmin
     $superadminID = $this->bantuanModel->getSuperadminID();
-    return redirect()->to('bantuan/chat/' . $superadminID);
+    return redirect()->to('/bantuan/chat/' . $superadminID);
 }
+
 
 public function chat($id_target)
 {
     $idUser = session()->get('id_user');
     $level  = session()->get('level');
+    $superadminID = $this->bantuanModel->getSuperadminID();
 
-    // Ambil superadmin
-    $superadmin = $this->db->table('tbl_user')->where('level', 0)->get()->getRow();
-    $superadminID = $superadmin->id_user;
-
-    // Jika admin mencoba membuka chat dengan admin lain → blokir ke superadmin
+    // 🚫 Admin tidak boleh chat admin lain → arahkan ke Superadmin
     if ($level != 0 && $id_target != $superadminID) {
         return redirect()->to('/bantuan/chat/' . $superadminID);
     }
 
-    // ✅ Ubah semua pesan dari target → ke user ini menjadi dibaca
-    $this->db->table('pesan_bantuan')
-        ->where('id_pengirim', $id_target)
-        ->where('id_penerima', $idUser)
-        ->where('status', 'baru')
-        ->update(['status' => 'dibaca']);
+    // ✅ Sidebar
+    if ($level == 0) {
+        // Superadmin → daftar admin
+        $listSidebar = $this->bantuanModel->listAdmin();
+        $listSidebar = array_map(function($row) {
+            return [
+                'id'    => $row['id_user'],
+                'label' => $row['nama'] ?? $row['nama_user'] ?? $row['username'],
+            ];
+        }, $listSidebar);
 
-    $data = [
-        'title' => 'Percakapan',
-        'chat'  => $this->bantuanModel->listPercakapan($id_target),
-        'id_admin' => $id_target
-    ];
+    } else {
+        // Admin → daftar subjek percakapan
+        $subs = $this->bantuanModel->listSubjekByUser($idUser);
+        $listSidebar = [];
+        foreach ($subs as $s) {
+            $listSidebar[] = [
+                'id'    => $superadminID,
+                'label' => $s['subjek']
+            ];
+        }
+    }
 
-    // ✅ Ini yang benar (tampilkan halaman chat, bukan admin list)
+    // ✅ Tandai sebagai dibaca
+    $this->bantuanModel->markAsRead($id_target, $idUser);
+
+    // ✅ Ambil subjek terakhir (untuk lanjut chat)
+    $last = $this->db->table('pesan_bantuan')
+        ->where("(id_pengirim = $idUser AND id_penerima = $id_target)
+              OR (id_pengirim = $id_target AND id_penerima = $idUser)")
+        ->orderBy('created_at', 'DESC')
+        ->get()->getRow();
+
+    $currentSubjek = $last->subjek ?? ''; // bisa kosong jika chat pertama kali
+
+    if ($level == 0) {
+    // Superadmin chat berbasis ID user tujuan
+    $chat = $this->bantuanModel->listPercakapan($id_target);
+} else {
+    // Admin chat berbasis subjek terakhir
+    $chat = $this->bantuanModel->listPercakapan($currentSubjek);
+}
+
+$data = [
+    'title'         => 'Percakapan',
+    'chat'          => ($level == 0) 
+                        ? $this->bantuanModel->listPercakapan($id_target)   // superadmin = berdasarkan user
+                        : $this->bantuanModel->listPercakapan($currentSubjek), // admin = berdasarkan subjek
+    'currentID'     => $id_target,
+    'currentSubjek' => $currentSubjek,
+    'listSidebar'   => $listSidebar
+];
+
+
     return view('pages/bantuan_chat', $data);
 }
 
 
     public function kirim()
-    {
-        $this->bantuanModel->insert([
-            'id_pengirim'  => session()->get('id_user'),
-            'id_penerima'  => $this->request->getPost('id_tujuan'),
-            'pesan'        => $this->request->getPost('pesan'),
-            'status'       => 'baru'
-        ]);
-
-        return redirect()->back();
+{
+    $subjek = $this->request->getPost('subjek');
+    if (!$subjek || trim($subjek) == '') {
+        $subjek = 'Percakapan Umum'; // atau buat subjek baru dinamis
     }
+
+    $this->bantuanModel->insert([
+        'id_pengirim' => session()->get('id_user'),
+        'id_penerima' => $this->request->getPost('id_tujuan'),
+        'subjek'      => $subjek,
+        'pesan'       => $this->request->getPost('pesan'),
+        'status'      => 'baru',
+    ]);
+
+    return redirect()->back();
+}
+
+
     
  public function refreshChat($id_target)
 {

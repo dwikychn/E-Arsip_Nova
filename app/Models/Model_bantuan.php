@@ -8,7 +8,7 @@ class Model_bantuan extends Model
 {
     protected $table = 'pesan_bantuan';
     protected $primaryKey = 'id_pesan';
-    protected $allowedFields = ['id_pengirim', 'id_penerima', 'pesan', 'status', 'created_at'];
+    protected $allowedFields = ['id_pengirim', 'id_penerima', 'subjek', 'pesan', 'status', 'created_at'];
 
     public function listAdmin()
     {
@@ -17,15 +17,49 @@ class Model_bantuan extends Model
             ->get()->getResultArray();
     }
 
-    public function listPercakapan($id_admin)
-    {
-        $id_login = session()->get('id_user'); // user yang sedang login
+   public function listPercakapan($targetOrSubjek)
+{
+    $id_login = (int) session()->get('id_user');
+    $superadminID = $this->getSuperadminID();
 
-        return $this->where("(id_pengirim = $id_login AND id_penerima = $id_admin)
-                            OR (id_pengirim = $id_admin AND id_penerima = $id_login)")
-                    ->orderBy('created_at', 'ASC')
-                    ->findAll();
+    // Jika param numeric -> anggap itu id_target (dipanggil dari redirect langsung ke user)
+    if (is_numeric($targetOrSubjek)) {
+        $id_target = (int) $targetOrSubjek;
+
+        // Gunakan query builder agar binding otomatis dan aman
+        $builder = $this->db->table('pesan_bantuan');
+
+        $builder->groupStart()
+                    ->where('id_pengirim', $id_login)
+                    ->where('id_penerima', $id_target)
+                ->groupEnd()
+                ->orGroupStart()
+                    ->where('id_pengirim', $id_target)
+                    ->where('id_penerima', $id_login)
+                ->groupEnd()
+                ->orderBy('created_at', 'ASC');
+
+        return $builder->get()->getResultArray();
     }
+
+    // Jika bukan numeric -> anggap itu subjek percakapan (dipanggil ketika admin memilih subjek)
+    $subjek = $targetOrSubjek;
+
+    // Ambil semua pesan dengan subjek itu yang melibatkan user saat ini
+    $builder = $this->db->table('pesan_bantuan');
+    $builder->where('subjek', $subjek)
+            ->groupStart()
+                ->where('id_pengirim', $id_login)
+                ->orWhere('id_pengirim', $superadminID)
+            ->groupEnd()
+            ->groupStart()
+                ->where('id_penerima', $id_login)
+                ->orWhere('id_penerima', $superadminID)
+            ->groupEnd()
+            ->orderBy('created_at', 'ASC');
+
+    return $builder->get()->getResultArray();
+}
 
     public function countUnread($user_id)
     {
@@ -51,5 +85,16 @@ class Model_bantuan extends Model
             ->where('id_penerima', $receiver_id)
             ->where('status', 'baru')
             ->update(['status' => 'dibaca']);
+    }
+
+    // ✅ Daftar subjek untuk superadmin ataupun admin
+    public function listSubjekByUser($id_user)
+    {
+        return $this->select('subjek, MAX(created_at) as terakhir')
+                    ->where('id_pengirim', $id_user)
+                    ->orWhere('id_penerima', $id_user)
+                    ->groupBy('subjek')
+                    ->orderBy('terakhir', 'DESC')
+                    ->get()->getResultArray();
     }
 }

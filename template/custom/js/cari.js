@@ -115,19 +115,48 @@
     });
 
     // === Preview File ===
-    $(document).on('click', '.preview-link', function(e) {
-      e.preventDefault();
+$(document).off('click', '.preview-link');
+$(document).on('click', '.preview-link', function (e) {
+  e.preventDefault();
+  e.stopPropagation(); // penting, biar gak trigger event lain
 
-      const fileUrl = $(this).data('file');
-      const fileName = $(this).data('nama');
-      const ext = fileName.split('.').pop().toLowerCase();
+  const fileUrl = $(this).data('file');
+  if (!fileUrl) return alert('⚠️ File tidak ditemukan, Cak.');
 
-      const previewWindow = window.open("", "_blank", "width=900,height=600");
-      if (['pdf', 'jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(ext)) {
-        previewWindow.location.href = fileUrl;
-      } else {
-        const gview = `https://docs.google.com/gview?url=${encodeURIComponent(fileUrl)}&embedded=true`;
-        previewWindow.location.href = gview;
-      }
-    });
-  });
+  // Buka tab baru langsung, tanpa fetch dulu
+  // Supaya browser anggep ini aksi user, bukan popup liar
+  const win = window.open('', '_blank');
+  if (!win) {
+    alert('🚫 Popup diblokir! Izinkan pop-up untuk situs ini.');
+    return;
+  }
+
+  // Isikan konten HTML sederhana di tab baru (preview fullscreen)
+  win.document.write(`
+    <html>
+      <head>
+        <title>Preview Arsip</title>
+        <style>
+          html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            background: #000;
+          }
+          iframe {
+            border: none;
+            width: 100%;
+            height: 100%;
+          }
+        </style>
+      </head>
+      <body>
+        <iframe src="${fileUrl}" allowfullscreen></iframe>
+      </body>
+    </html>
+  `);
+  win.document.close();
+});
+
+});

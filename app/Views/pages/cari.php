@@ -143,7 +143,9 @@
     </div>
   </div>
 </section>
+<?= $this->endSection() ?>
 
+<?= $this->section('styles') ?>
 <link rel="stylesheet" href="<?= base_url('template/custom/css/cari.css') ?>">
 <?= $this->endSection() ?>
 

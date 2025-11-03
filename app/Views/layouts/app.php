@@ -67,7 +67,7 @@
     }
   </script>
 
-  <!-- Page-specific scripts -->
+  <?= $this->renderSection('styles') ?>
   <?= $this->renderSection('scripts') ?>
 
 </body>

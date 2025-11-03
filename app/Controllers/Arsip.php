@@ -275,6 +275,18 @@ class Arsip extends BaseController
             ? (int) $this->request->getPost('id_dep')
             : (int) session()->get('id_dep');
 
+        // Ambil nama departemen & kategori buat path
+        $kategori = $this->Model_kategori->find($idKategori);
+        $dep = $this->Model_departemen->find($idDep);
+        $folderKategori = $kategori ? url_title($kategori['nama_kategori'], '_', true) : 'lainnya';
+        $folderDep = $dep ? url_title($dep['nama_dep'], '_', true) : 'umum';
+        $uploadPath = FCPATH . "uploads/{$folderDep}/{$folderKategori}/";
+
+        // Pastikan folder tujuan ada
+        if (!is_dir($uploadPath)) {
+            mkdir($uploadPath, 0777, true);
+        }
+
         $data = [
             'id_kategori' => $idKategori,
             'id_dep'      => $idDep,
@@ -283,24 +295,53 @@ class Arsip extends BaseController
             'tgl_update'  => date('Y-m-d H:i:s'),
         ];
 
-        if ($file && $file->isValid() && !$file->hasMoved()) {
-            $newName = url_title($namaDokumen, '_', true) . '_' . time() . '.' . $file->getExtension();
+        $fileLamaPath = FCPATH . $arsipLama['path_arsip'];
+        $fileBaruNama = $arsipLama['file_arsip']; // default nama lama
 
-            $file->move(FCPATH . 'uploads/arsip', $newName);
+        // === 1️⃣ RENAME TANPA GANTI FILE ===
+        if ($namaDokumen !== '' && (!$file || !$file->isValid())) {
+            $ext = pathinfo($arsipLama['file_arsip'], PATHINFO_EXTENSION);
+            $newName = url_title($namaDokumen, '_', true) . '.' . $ext;
 
-            if (!empty($arsipLama['file_arsip']) && file_exists(FCPATH . 'uploads/arsip/' . $arsipLama['file_arsip'])) {
-                @unlink(FCPATH . 'uploads/arsip/' . $arsipLama['file_arsip']);
+            $oldPath = rtrim($fileLamaPath, '/\\'); // pastikan gak ada slash di akhir
+            $newPath = $uploadPath . $newName;
+
+            // pastikan file lama memang ada dan bukan direktori
+            if (is_file($oldPath)) {
+                if (!rename($oldPath, $newPath)) {
+                    throw new \RuntimeException("Gagal rename file dari {$oldPath} ke {$newPath}");
+                }
             }
 
             $data['file_arsip'] = $newName;
-
-            $this->logAudit('Update Arsip', "File arsip diperbarui: {$newName}");
-        } else {
-            $this->logAudit('Update Arsip', "Data arsip diperbarui tanpa file baru: ID {$id}");
+            $data['path_arsip'] = "uploads/{$folderDep}/{$folderKategori}/{$newName}";
+            $this->logAudit('Update Arsip', "File di-rename jadi {$newName}");
         }
 
+        // === 2️⃣ GANTI FILE (dengan atau tanpa rename) ===
+        if ($file && $file->isValid() && !$file->hasMoved()) {
+            $ext = $file->getExtension();
+            $newName = $namaDokumen !== ''
+                ? url_title($namaDokumen, '_', true) . '.' . $ext
+                : $arsipLama['file_arsip'];
+
+            $file->move($uploadPath, $newName, true);
+
+            // Hapus file lama kalau beda nama
+            if (file_exists($fileLamaPath) && $arsipLama['file_arsip'] !== $newName) {
+                @unlink($fileLamaPath);
+            }
+
+            $data['file_arsip'] = $newName;
+            $data['path_arsip'] = "uploads/{$folderDep}/{$folderKategori}/{$newName}";
+            $data['ukuran_arsip'] = $file->getSize();
+            $this->logAudit('Update Arsip', "File baru diupload: {$newName}");
+        }
+
+        // === Simpan ke DB ===
         $this->Model_arsip->update($id, $data);
 
+        // === Update Akses ===
         $this->Model_arsip_akses->where('id_arsip', $id)->delete();
 
         if ($klasifikasi === 'terbatas') {
@@ -326,7 +367,7 @@ class Arsip extends BaseController
             $this->logAudit('Update Akses Arsip', "Akses diperbarui untuk arsip ID {$id}");
         }
 
-        return redirect()->to('/arsip')->with('pesan_arsip', 'Arsip berhasil diupdate.');
+        return redirect()->to('/arsip')->with('pesan_arsip', 'Arsip berhasil diperbarui.');
     }
 
     public function preview($id)

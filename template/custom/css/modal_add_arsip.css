@@ -1,66 +1,236 @@
-/* === Ukuran Modal === */
-#modalAddArsip .modal-dialog {
-  width: 55% !important;
-  max-width: 55% !important;
+/* === Modal Full Width === */
+#modalAddArsip .modal-dialog.modal-full {
+  width: 90% !important;
+  max-width: 1400px !important;
+  margin: 30px auto;
 }
 
-/* === Arsip Item Box === */
-.arsip-item {
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
-  padding: 15px 15px 10px 15px;
-  margin-bottom: 15px;
-  background: #fff;
-}
-
-/* Hapus garis putus-putus antar arsip */
-.arsip-item:not(:last-child) {
+/* === Modal Header === */
+#modalAddArsip .modal-header {
+  background: linear-gradient(135deg, #3c8dbc 0%, #2a6a94 100%);
   border-bottom: none;
+  padding: 15px 20px;
 }
 
-/* === Label dan Input === */
-#modalAddArsip label {
+#modalAddArsip .modal-title {
+  font-size: 18px;
   font-weight: 600;
-  font-size: 13px;
-  margin-bottom: 4px;
-  display: block;
 }
 
-#modalAddArsip .form-control {
-  border-radius: 6px;
+/* === Modal Body === */
+#modalAddArsip .modal-body {
+  padding: 20px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+/* === Tabel === */
+#tableArsipAdd {
+  margin-bottom: 0;
   border: 1px solid #ddd;
+}
+
+#tableArsipAdd thead {
+  background-color: #f8f9fa;
+}
+
+#tableArsipAdd thead th {
   font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  border: 1px solid #ddd;
+  padding: 10px 8px;
+  vertical-align: middle;
+  text-align: center;
+}
+
+#tableArsipAdd tbody td {
+  padding: 8px;
+  vertical-align: middle;
+  border: 1px solid #ddd;
+}
+
+/* === Input dalam tabel === */
+#tableArsipAdd input[type="text"],
+#tableArsipAdd textarea,
+#tableArsipAdd select {
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 4px;
   padding: 6px 8px;
+  font-size: 13px;
+  box-sizing: border-box;
 }
 
-#modalAddArsip .form-control:focus {
+#tableArsipAdd input[type="text"]:focus,
+#tableArsipAdd textarea:focus,
+#tableArsipAdd select:focus {
   border-color: #3c8dbc;
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(60, 141, 188, 0.25);
 }
 
-/* === File Arsip dan Tombol Hapus === */
-.file-arsip-container {
+#tableArsipAdd textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+/* === Tombol dalam tabel === */
+#tableArsipAdd .btn-file {
+  width: 100%;
+  padding: 6px 8px;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 5px;
+}
+
+#tableArsipAdd .btn-change-file {
+  width: 100%;
+  padding: 5px 8px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+#tableArsipAdd .btn-remove {
+  padding: 6px 10px;
+  font-size: 14px;
+}
+
+/* === File Column Container === */
+.file-column-container {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 5px;
 }
 
-.file-arsip-container input {
-  flex: 1;
+/* === Empty State === */
+#emptyState {
+  display: none;
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  background: #f9f9f9;
 }
 
-.btn-remove-arsip {
-  flex-shrink: 0;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+#emptyState.show {
+  display: block;
 }
 
-/* === Tombol dan Modal Footer === */
+#emptyState i {
+  color: #ccc;
+}
+
+/* === Modal Footer === */
 #modalAddArsip .modal-footer {
-  border-top: 1px solid #eee;
+  border-top: 1px solid #e5e5e5;
+  padding: 15px 20px;
+  background: #f8f9fa;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 #modalAddArsip .btn {
-  border-radius: 5px;
+  padding: 8px 20px;
+  font-size: 14px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+/* === Scrollbar Custom === */
+#modalAddArsip .modal-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+#modalAddArsip .modal-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+#modalAddArsip .modal-body::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+#modalAddArsip .modal-body::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* === Akses Terbatas dalam Klasifikasi === */
+.klasifikasi-cell {
+  position: relative;
+}
+
+.akses-terbatas-container {
+  font-size: 12px;
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #f9f9f9;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.akses-terbatas-container label {
+  font-size: 11px;
+  margin-bottom: 2px;
+}
+
+.akses-terbatas-container input[type="checkbox"] {
+  margin-right: 4px;
+}
+
+.dep-wrapper {
+  max-height: 150px;
+  overflow-y: auto;
+  margin-top: 5px;
+}
+
+.dep-item-inline {
+  margin-bottom: 8px;
+}
+
+.user-container-inline {
+  margin-left: 20px;
+  padding-left: 10px;
+  border-left: 2px solid #ddd;
+}
+
+/* Scrollbar untuk akses container */
+.akses-terbatas-container::-webkit-scrollbar,
+.dep-wrapper::-webkit-scrollbar {
+  width: 6px;
+}
+
+.akses-terbatas-container::-webkit-scrollbar-track,
+.dep-wrapper::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.akses-terbatas-container::-webkit-scrollbar-thumb,
+.dep-wrapper::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.akses-terbatas-container::-webkit-scrollbar-thumb:hover,
+.dep-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* === Responsive === */
+@media (max-width: 1200px) {
+  #modalAddArsip .modal-dialog.modal-full {
+    width: 95% !important;
+  }
+}
+
+/* === Nomor urut === */
+#tableArsipAdd tbody td:first-child {
+  text-align: center;
+  font-weight: 600;
+  color: #666;
 }

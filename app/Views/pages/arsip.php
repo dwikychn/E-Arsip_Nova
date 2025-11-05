@@ -154,6 +154,7 @@
 
 <?= $this->section('scripts') ?>
 <script src="<?= base_url('template/custom/js/arsip.js') ?>"></script>
+<script src="<?= base_url('template/custom/js/modal_edit_arsip.js') ?>"></script>
 <?= $this->endSection() ?>
 <?= $this->include('modal/modal_arsip_add') ?>
 <?= $this->include('modal/modal_cari_preview') ?>

@@ -182,50 +182,49 @@ $(document).ready(function() {
         }
     });
 
-    // === Preview File ===
-    $(document).on('click', '.preview-link', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
+  // === Preview File ===
+  $(document).off('click', '.preview-link');
+  $(document).on('click', '.preview-link', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
 
-        const fileUrl = $(this).data('file');
-        const fileName = $(this).data('nama');
+    const fileUrl = $(this).data('file');
+    const fileName = $(this).data('nama');
+    
+    if (!fileUrl) {
+      alert('⚠️ File tidak ditemukan.');
+      return;
+    }
 
-        if (!fileUrl) {
-            alert('File tidak ditemukan');
-            return;
-        }
+    const ext = fileName.split('.').pop().toLowerCase();
 
-        const ext = fileName.split('.').pop().toLowerCase();
-        let viewerUrl = '';
+    // ✅ PDF & Gambar: Buka langsung di tab baru
+    if (['pdf', 'jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'].includes(ext)) {
+      window.open(fileUrl, '_blank');
+      return;
+    }
 
-        if (['pdf', 'jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'].includes(ext)) {
-            viewerUrl = fileUrl + '#toolbar=1';
-        } else if (['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'csv', 'rtf'].includes(ext)) {
-            viewerUrl = 'https://docs.google.com/gview?url=' + encodeURIComponent(fileUrl) + '&embedded=true';
-        } else {
-            window.location.href = fileUrl;
-            return;
-        }
+    // ⚠️ File Office (Excel, Word, PowerPoint): Tampilkan peringatan
+    if (['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'].includes(ext)) {
+      const pesan = `File ${ext.toUpperCase()} tidak dapat di-preview langsung di browser.\n\n` +
+                    `Silakan:\n` +
+                    `1. Download file terlebih dahulu\n` +
+                    `2. Buka dengan Microsoft Office atau LibreOffice\n\n` +
+                    `Klik OK untuk download file.`;
+      
+      if (confirm(pesan)) {
+        window.location.href = fileUrl;
+      }
+      return;
+    }
 
-        const newTab = window.open('', '_blank');
-        if (newTab) {
-            newTab.document.write(`
-                <html>
-                    <head>
-                        <title>Preview: ${fileName}</title>
-                        <style>
-                            html, body { height: 100%; margin: 0; background: #111; }
-                            iframe { border: none; width: 100%; height: 100%; }
-                        </style>
-                    </head>
-                    <body>
-                        <iframe src="${viewerUrl}" allowfullscreen></iframe>
-                    </body>
-                </html>
-            `);
-            newTab.document.close();
-        } else {
-            alert('Pop-up diblokir! Izinkan pop-up untuk melihat preview.');
-        }
+    // 📄 File teks lainnya
+    if (['txt', 'csv', 'log', 'json', 'xml'].includes(ext)) {
+      window.open(fileUrl, '_blank');
+      return;
+    }
+
+    // 📦 File lain: Langsung download
+    window.location.href = fileUrl;
     });
 });

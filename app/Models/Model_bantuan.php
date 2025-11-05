@@ -8,7 +8,8 @@ class Model_bantuan extends Model
 {
     protected $table = 'pesan_bantuan';
     protected $primaryKey = 'id_pesan';
-    protected $allowedFields = ['id_pengirim', 'id_penerima', 'subjek', 'pesan', 'status', 'created_at'];
+    protected $allowedFields = ['id_pengirim', 'id_penerima', 'subjek', 'pesan', 'status', 'created_at', 'is_closed'];
+
 
     public function listAdmin()
     {
@@ -61,19 +62,19 @@ class Model_bantuan extends Model
 
     // ✅ DIPERBAIKI: Daftar subjek untuk admin dengan filter subjek tidak kosong
     public function listSubjekByUser($id_user)
-    {
-        return $this->db->table('pesan_bantuan')
-            ->select('subjek, MAX(created_at) as terakhir, MAX(is_closed) as status')
-            ->groupStart()
-                ->where('id_pengirim', $id_user)
-                ->orWhere('id_penerima', $id_user)
-            ->groupEnd()
-            ->where('subjek IS NOT NULL')
-            ->where('subjek !=', '')
-            ->groupBy('subjek')
-            ->orderBy('terakhir', 'DESC')
-            ->get()->getResultArray();
-    }
+{
+    return $this->db->table('pesan_bantuan')
+        ->select('subjek, MAX(created_at) as terakhir, MAX(is_closed) as is_closed')
+        ->groupStart()
+            ->where('id_pengirim', $id_user)
+            ->orWhere('id_penerima', $id_user)
+        ->groupEnd()
+        ->where('subjek !=', '')
+        ->groupBy('subjek')
+        ->orderBy('terakhir', 'DESC')
+        ->get()->getResultArray();
+}
+
 
     public function listPercakapanBySubjek($subjek, $idUser)
     {
@@ -105,5 +106,21 @@ class Model_bantuan extends Model
             ->where('status', 'baru')
             ->update(['status' => 'dibaca']);
     }
+    public function setClosed($subjek, $idUser)
+    {
+        return $this->db->table($this->table)
+            ->where('subjek', $subjek)
+            ->groupStart()
+                ->where('id_pengirim', $idUser)
+                ->orWhere('id_penerima', $idUser)
+            ->groupEnd()
+            ->update(['is_closed' => 1]);
+    }
+public function cekSubjek($idUser, $subjek)
+{
+    return $this->where('id_pengirim', $idUser)
+                ->where('subjek', $subjek)
+                ->first();
+}
 
 }

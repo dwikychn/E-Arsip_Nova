@@ -78,10 +78,10 @@ class Bantuan extends BaseController
 
             foreach ($subs as $s) {
                 $listSidebar[] = [
-                    'id'     => urlencode($s['subjek']),
-                    'label'  => $s['subjek'],
-                    'status' => $s['status'] ?? 0
-                ];
+                'id'       => urlencode($s['subjek']),
+                'label'    => $s['subjek'],
+                'is_closed'=> $s['is_closed'] ?? 0
+            ];
             }
 
             // ✅ Tentukan subjek aktif
@@ -96,18 +96,19 @@ class Bantuan extends BaseController
         }
 
         // Tandai pesan sebagai dibaca
-        if ($level == 0) {
-            $this->bantuanModel->markAsRead($id_target, $idUser);
+       if ($level == 0) {
+            $idTujuan = $id_target; // superadmin -> admin
         } else {
-            $this->bantuanModel->markAsReadBySubjek($currentSubjek, $idUser);
+            $idTujuan = $superadminID; // admin -> superadmin
         }
-        
+
         $data = [
             'title'         => 'Percakapan',
             'chat'          => $chat,
             'currentID'     => $id_target,
             'currentSubjek' => $currentSubjek,
-            'listSidebar'   => $listSidebar
+            'listSidebar'   => $listSidebar,
+            'idTujuan'      => $idTujuan  // ✅ KIRIM KE VIEW
         ];
 
         return view('pages/bantuan_chat', $data);
@@ -140,71 +141,51 @@ class Bantuan extends BaseController
     }
 
 
-    public function refreshChat($id_target)
-    {
-        $idUser = session()->get('id_user');
-
-        // Ambil ulang percakapan user ↔ target
-        $chat = $this->bantuanModel->listPercakapanByUser($idUser, $id_target);
-
-        $html = '';
-        foreach ($chat as $c) {
-            $self = ($c['id_pengirim'] == $idUser);
-
-            $html .= '
-            <div style="text-align:' . ($self ? 'right' : 'left') . '; margin:5px;">
-                <span style="
-                    background:' . ($self ? '#d1ffd1' : '#fff') . ';
-                    padding:6px 12px;
-                    border-radius:8px;
-                    '. ($self ? '' : 'border:1px solid #ccc;') . '
-                    display:inline-block;">
-                    '.esc($c['pesan']).'
-                </span>
-            </div>';
-        }
-
-        return $html;
-    }
-
-    public function closeSubjek()
+public function refreshChat($id_target)
 {
-    $subjek = $this->request->getGet('subjek');
     $idUser = session()->get('id_user');
+    $chat = $this->bantuanModel->listPercakapanByUser($idUser, $id_target);
 
-    $this->db->table('pesan_bantuan')
-        ->where('subjek', $subjek)
-        ->where('id_pengirim', $idUser)
-        ->orWhere('id_penerima', $idUser)
-        ->update(['is_closed' => 1]);
-
-    return redirect()->back();
+    return $this->response
+        ->setHeader('Cache-Control', 'no-cache, must-revalidate')
+        ->setHeader('Expires', '0')
+        ->setBody(view('pages/partial_chat', ['chat' => $chat]));
 }
 
-    public function refreshChatSubjek($subjek)
+
+public function refreshChatSubjek($subjek)
 {
     $idUser = session()->get('id_user');
-
     $chat = $this->bantuanModel->listPercakapanBySubjek(urldecode($subjek), $idUser);
 
-    $html = '';
     foreach ($chat as $c) {
-        $self = ($c['id_pengirim'] == $idUser);
+        echo '<div class="chat-item '.($c['id_pengirim'] == $idUser ? 'me' : 'other').'">';
+        echo '<div class="bubble">'.nl2br(esc($c['pesan'])).'<br>';
+        echo '<small class="waktu">'.$c['created_at'].'</small>';
+        echo '</div></div>';
+    }
+}
+public function buatSubjek()
+{
+    $idUser = session()->get('id_user');
+    $superadminID = $this->bantuanModel->getSuperadminID();
+    $subjek = $this->request->getPost('subjek');
 
-        $html .= '
-        <div style="text-align:' . ($self ? 'right' : 'left') . '; margin:5px;">
-            <span style="
-                background:' . ($self ? '#d1ffd1' : '#fff') . ';
-                padding:6px 12px;
-                border-radius:8px;
-                '. ($self ? '' : 'border:1px solid #ccc;') . '
-                display:inline-block;">
-                '.esc($c['pesan']).'
-            </span>
-        </div>';
+    // Cek kalau sudah ada subjek sama
+    $cek = $this->bantuanModel->cekSubjek($idUser, $subjek);
+    if($cek){
+        return redirect()->back()->with('error', 'Subjek sudah ada!');
     }
 
-    return $html;
+    // Masukkan pesan dummy untuk membuat thread
+    $this->bantuanModel->insert([
+        'id_pengirim' => $idUser,
+        'id_penerima' => $superadminID,
+        'pesan'       => "(Percakapan Baru Dibuat)",
+        'subjek'      => $subjek
+    ]);
+
+    return redirect()->to("/bantuan/chat/$superadminID/" . urlencode($subjek));
 }
 
 }

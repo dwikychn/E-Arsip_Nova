@@ -1,0 +1,96 @@
+/* === Modal Edit Arsip (Sama seperti Add) === */
+.modal[id^="updateArsip"] .modal-dialog.modal-full {
+  width: 90% !important;
+  max-width: 1400px !important;
+  margin: 30px auto;
+}
+
+.modal[id^="updateArsip"] .modal-header {
+  background: linear-gradient(135deg, #3c8dbc 0%, #2a6a94 100%);
+  border-bottom: none;
+  padding: 15px 20px;
+}
+
+.modal[id^="updateArsip"] .modal-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.modal[id^="updateArsip"] .modal-body {
+  padding: 20px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.modal[id^="updateArsip"] .table-bordered {
+  margin-bottom: 0;
+  border: 1px solid #ddd;
+}
+
+.modal[id^="updateArsip"] thead {
+  background-color: #f8f9fa;
+}
+
+.modal[id^="updateArsip"] thead th {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  border: 1px solid #ddd;
+  padding: 10px 8px;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.modal[id^="updateArsip"] tbody td {
+  padding: 8px;
+  vertical-align: middle;
+  border: 1px solid #ddd;
+}
+
+.modal[id^="updateArsip"] input[type="text"],
+.modal[id^="updateArsip"] textarea,
+.modal[id^="updateArsip"] select {
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+.modal[id^="updateArsip"] textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.modal[id^="updateArsip"] .modal-footer {
+  border-top: 1px solid #e5e5e5;
+  padding: 15px 20px;
+  background: #f8f9fa;
+}
+
+.modal[id^="updateArsip"] .btn {
+  padding: 8px 20px;
+  font-size: 14px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+/* Scrollbar */
+.modal[id^="updateArsip"] .modal-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal[id^="updateArsip"] .modal-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.modal[id^="updateArsip"] .modal-body::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.modal[id^="updateArsip"] .modal-body::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

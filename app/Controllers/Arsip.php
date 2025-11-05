@@ -259,154 +259,175 @@ class Arsip extends BaseController
         return redirect()->to('/arsip')->with('pesan_arsip', 'Arsip terpilih berhasil dihapus.');
     }
 
-    public function updateArsip($id)
+    public function updateArsip($id_arsip)
     {
-        $arsipLama = $this->Model_arsip->find($id);
-        if (!$arsipLama) {
-            return redirect()->to('/arsip')->with('error_arsip', 'Arsip tidak ditemukan.');
+        $arsip = $this->Model_arsip->find($id_arsip);
+        if (!$arsip) {
+            return redirect()->back()->with('error', 'Arsip tidak ditemukan.');
         }
 
-        $file         = $this->request->getFile('file_arsip');
-        $namaDokumen  = trim($this->request->getPost('nama_dokumen'));
-        $idKategori   = (int) $this->request->getPost('id_kategori');
-        $deskripsi    = $this->request->getPost('deskripsi');
-        $klasifikasi  = strtolower($this->request->getPost('klasifikasi'));
-        $idDep        = session()->get('level') == 0
-            ? (int) $this->request->getPost('id_dep')
-            : (int) session()->get('id_dep');
+        $isSuper = ((int) session()->get('level') === 0);
+        $idUser = session()->get('id_user');
+        $namaUser = session()->get('nama_user');
 
-        // Ambil nama departemen & kategori buat path
-        $kategori = $this->Model_kategori->find($idKategori);
-        $dep = $this->Model_departemen->find($idDep);
-        $folderKategori = $kategori ? url_title($kategori['nama_kategori'], '_', true) : 'lainnya';
-        $folderDep = $dep ? url_title($dep['nama_dep'], '_', true) : 'umum';
-        $uploadPath = FCPATH . "uploads/{$folderDep}/{$folderKategori}/";
+        // === Ambil input ===
+        $idKategori = (int) $this->request->getPost('id_kategori');
+        $klasifikasi = ucfirst(strtolower($this->request->getPost('klasifikasi')));
+        $deskripsi = $this->request->getPost('deskripsi');
+        $namaArsipInput = trim($this->request->getPost('nama_arsip'));
+        $idDep = $isSuper ? (int) $this->request->getPost('id_dep') : (int) session()->get('id_dep');
 
-        // Pastikan folder tujuan ada
+        $aksesDep = $this->request->getPost('akses_dep') ?? [];
+        $aksesUser = $this->request->getPost('akses_user') ?? [];
+        $aksesUserGlobal = $this->request->getPost('akses_user_global') ?? [];
+
+        // === Validasi dasar ===
+        $kategoriRow = $this->Model_kategori->find($idKategori);
+        $depRow = $this->Model_departemen->find($idDep);
+
+        if (!$kategoriRow || !$depRow) {
+            return redirect()->back()->with('error', 'Kategori atau Departemen tidak valid.');
+        }
+
+        // === Buat ulang path folder ===
+        $kategoriPathParts = $this->Model_kategori->getFullPath($idKategori);
+        $kategoriPath = implode('/', array_map(fn($n) => url_title($n, '_', true), $kategoriPathParts));
+        $departemenFolder = url_title($depRow['nama_dep'], '_', true);
+        $uploadPath = FCPATH . 'uploads/' . $departemenFolder . '/' . $kategoriPath;
+
         if (!is_dir($uploadPath)) {
             mkdir($uploadPath, 0777, true);
         }
 
-        $data = [
+        // === Tangani upload file baru (jika ada) ===
+        $fileBaru = $this->request->getFile('file_arsip');
+        $fileNameFinal = $arsip['file_arsip']; // default tetap file lama
+        $filePathFinal = 'uploads/' . $departemenFolder . '/' . $kategoriPath . '/';
+
+        if ($fileBaru && $fileBaru->isValid() && !$fileBaru->hasMoved()) {
+            // Hapus file lama
+            $oldFilePath = FCPATH . $arsip['path_arsip'] . $arsip['file_arsip'];
+            if (file_exists($oldFilePath)) {
+                unlink($oldFilePath);
+            }
+
+            // Buat nama baru (kalau user isi nama arsip)
+            $safeName = $namaArsipInput !== ''
+                ? url_title($namaArsipInput, '_', true)
+                : pathinfo($fileBaru->getClientName(), PATHINFO_FILENAME);
+
+            $newName = $safeName . '_' . bin2hex(random_bytes(3)) . '.' . strtolower($fileBaru->getExtension());
+            $fileBaru->move($uploadPath, $newName);
+
+            $fileNameFinal = $newName;
+        } else {
+            // Kalau gak upload file baru tapi rename arsip → rename fisik
+            if ($namaArsipInput !== '') {
+                $safeName = url_title($namaArsipInput, '_', true);
+                $ext = pathinfo($arsip['file_arsip'], PATHINFO_EXTENSION);
+
+                $oldPath = FCPATH . $arsip['path_arsip'] . $arsip['file_arsip'];
+                $newName = $safeName . '.' . $ext;
+                $newPath = $uploadPath . '/' . $newName;
+
+                if ($oldPath !== $newPath && file_exists($oldPath)) {
+                    rename($oldPath, $newPath);
+                    $fileNameFinal = $newName;
+                }
+            }
+        }
+
+        // === Update data arsip ===
+        $dataUpdate = [
             'id_kategori' => $idKategori,
-            'id_dep'      => $idDep,
             'deskripsi'   => $deskripsi,
+            'file_arsip'  => $fileNameFinal,
+            'path_arsip'  => $filePathFinal,
+            'id_dep'      => $idDep,
+            'id_user'     => $idUser,
+            'nama_user_upload' => $namaUser,
             'klasifikasi' => $klasifikasi,
-            'tgl_update'  => date('Y-m-d H:i:s'),
         ];
 
-        $fileLamaPath = FCPATH . $arsipLama['path_arsip'];
-        $fileBaruNama = $arsipLama['file_arsip']; // default nama lama
+        $this->Model_arsip->update($id_arsip, $dataUpdate);
 
-        // === 1️⃣ RENAME TANPA GANTI FILE ===
-        if ($namaDokumen !== '' && (!$file || !$file->isValid())) {
-            $ext = pathinfo($arsipLama['file_arsip'], PATHINFO_EXTENSION);
-            $newName = url_title($namaDokumen, '_', true) . '.' . $ext;
+        // === Update akses (hapus dulu, lalu insert ulang) ===
+        $this->Model_arsip_akses->where('id_arsip', $id_arsip)->delete();
 
-            $oldPath = rtrim($fileLamaPath, '/\\'); // pastikan gak ada slash di akhir
-            $newPath = $uploadPath . $newName;
+        if (strtolower($klasifikasi) === 'terbatas') {
+            foreach ($aksesDep as $depId) {
+                $this->Model_arsip_akses->insert([
+                    'id_arsip'   => $id_arsip,
+                    'id_dep'     => (int) $depId,
+                    'id_user'    => null,
+                    'tipe_akses' => 'departemen',
+                ]);
 
-            // pastikan file lama memang ada dan bukan direktori
-            if (is_file($oldPath)) {
-                if (!rename($oldPath, $newPath)) {
-                    throw new \RuntimeException("Gagal rename file dari {$oldPath} ke {$newPath}");
+                if (!empty($aksesUser[$depId])) {
+                    foreach ($aksesUser[$depId] as $usrId) {
+                        $this->Model_arsip_akses->insert([
+                            'id_arsip'   => $id_arsip,
+                            'id_dep'     => (int) $depId,
+                            'id_user'    => (int) $usrId,
+                            'tipe_akses' => 'user',
+                        ]);
+                    }
                 }
             }
 
-            $data['file_arsip'] = $newName;
-            $data['path_arsip'] = "uploads/{$folderDep}/{$folderKategori}/{$newName}";
-            $this->logAudit('Update Arsip', "File di-rename jadi {$newName}");
+            if (!empty($aksesUserGlobal)) {
+                foreach ($aksesUserGlobal as $usrId) {
+                    $this->Model_arsip_akses->insert([
+                        'id_arsip'   => $id_arsip,
+                        'id_dep'     => null,
+                        'id_user'    => (int) $usrId,
+                        'tipe_akses' => 'user',
+                    ]);
+                }
+            }
         }
 
-        // === 2️⃣ GANTI FILE (dengan atau tanpa rename) ===
-        if ($file && $file->isValid() && !$file->hasMoved()) {
-            $ext = $file->getExtension();
-            $newName = $namaDokumen !== ''
-                ? url_title($namaDokumen, '_', true) . '.' . $ext
-                : $arsipLama['file_arsip'];
+        $this->logAudit('Edit Arsip', "Arsip diperbarui: $fileNameFinal");
 
-            $file->move($uploadPath, $newName, true);
+        return redirect()->to('/arsip')->with('pesan_arsip', 'Data arsip berhasil diperbarui!');
+    }
 
-            // Hapus file lama kalau beda nama
-            if (file_exists($fileLamaPath) && $arsipLama['file_arsip'] !== $newName) {
-                @unlink($fileLamaPath);
-            }
-
-            $data['file_arsip'] = $newName;
-            $data['path_arsip'] = "uploads/{$folderDep}/{$folderKategori}/{$newName}";
-            $data['ukuran_arsip'] = $file->getSize();
-            $this->logAudit('Update Arsip', "File baru diupload: {$newName}");
+    public function preview($id)
+    {
+        $arsip = $this->Model_arsip->find($id);
+        if (!$arsip) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException('File tidak ditemukan');
         }
 
-        // === Simpan ke DB ===
-        $this->Model_arsip->update($id, $data);
-
-        // === Update Akses ===
-        $this->Model_arsip_akses->where('id_arsip', $id)->delete();
-
-        if ($klasifikasi === 'terbatas') {
-            $aksesDep = $this->request->getPost('akses_dep') ?? [];
-            foreach ($aksesDep as $depId) {
-                $this->Model_arsip_akses->insert([
-                    'id_arsip' => $id,
-                    'id_dep'   => (int) $depId,
-                    'id_user'  => null,
-                    'tipe_akses' => 'departemen'
-                ]);
-            }
-
-            $aksesUserGlobal = $this->request->getPost('akses_user_global') ?? [];
-            foreach ($aksesUserGlobal as $userId) {
-                $this->Model_arsip_akses->insert([
-                    'id_arsip' => $id,
-                    'id_user'  => (int) $userId,
-                    'id_dep'   => null,
-                    'tipe_akses' => 'user'
-                ]);
-            }
-            $this->logAudit('Update Akses Arsip', "Akses diperbarui untuk arsip ID {$id}");
+        $filePath = FCPATH . $arsip['path_arsip'] . $arsip['file_arsip'];
+        if (!file_exists($filePath)) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException('File tidak ditemukan di server');
         }
 
-        return redirect()->to('/arsip')->with('pesan_arsip', 'Arsip berhasil diperbarui.');
+        $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+
+        // MIME types yang bisa dibuka langsung di browser
+        $mimeTypes = [
+            'pdf'  => 'application/pdf',
+            'jpg'  => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png'  => 'image/png',
+            'gif'  => 'image/gif',
+            'webp' => 'image/webp',
+            'bmp'  => 'image/bmp',
+            'svg'  => 'image/svg+xml',
+            'txt'  => 'text/plain',
+            'html' => 'text/html',
+            'htm'  => 'text/html',
+        ];
+
+        $mime = $mimeTypes[$ext] ?? 'application/octet-stream';
+
+        // ✅ Set header "inline" agar dibuka di browser
+        return $this->response
+            ->setHeader('Content-Type', $mime)
+            ->setHeader('Content-Disposition', 'inline; filename="' . $arsip['file_arsip'] . '"')
+            ->setHeader('Content-Length', filesize($filePath))
+            ->setBody(file_get_contents($filePath));
     }
-
-public function preview($id)
-{
-    $arsip = $this->Model_arsip->find($id);
-    if (!$arsip) {
-        throw new \CodeIgniter\Exceptions\PageNotFoundException('File tidak ditemukan');
-    }
-
-    $filePath = FCPATH . $arsip['path_arsip'] . $arsip['file_arsip'];
-    if (!file_exists($filePath)) {
-        throw new \CodeIgniter\Exceptions\PageNotFoundException('File tidak ditemukan di server');
-    }
-
-    $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
-
-    // MIME types yang bisa dibuka langsung di browser
-    $mimeTypes = [
-        'pdf'  => 'application/pdf',
-        'jpg'  => 'image/jpeg',
-        'jpeg' => 'image/jpeg',
-        'png'  => 'image/png',
-        'gif'  => 'image/gif',
-        'webp' => 'image/webp',
-        'bmp'  => 'image/bmp',
-        'svg'  => 'image/svg+xml',
-        'txt'  => 'text/plain',
-        'html' => 'text/html',
-        'htm'  => 'text/html',
-    ];
-
-    $mime = $mimeTypes[$ext] ?? 'application/octet-stream';
-
-    // ✅ Set header "inline" agar dibuka di browser
-    return $this->response
-        ->setHeader('Content-Type', $mime)
-        ->setHeader('Content-Disposition', 'inline; filename="' . $arsip['file_arsip'] . '"')
-        ->setHeader('Content-Length', filesize($filePath))
-        ->setBody(file_get_contents($filePath));
-}
-    
 }

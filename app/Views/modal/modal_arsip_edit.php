@@ -62,7 +62,7 @@ $selectedDeps = [];
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Nama Arsip (opsional)</label>
-                                        <input type="text" name="nama_dokumen" class="form-control" placeholder="Isi untuk ubah nama file">
+                                        <input type="text" name="nama_arsip" class="form-control" placeholder="Isi untuk ubah nama file">
                                         <small class="text-muted">Kosongkan jika tidak ingin mengganti nama file.</small>
                                     </div>
                                 </div>

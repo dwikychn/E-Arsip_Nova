@@ -168,12 +168,43 @@ class Bantuan extends BaseController
     }
 
     public function closeSubjek()
-    {
-        $subjek = $this->request->getGet('subjek');
-        $this->db->table('pesan_bantuan')
-            ->where('subjek', $subjek)
-            ->update(['is_closed' => 1]);
-        return redirect()->back();
+{
+    $subjek = $this->request->getGet('subjek');
+    $idUser = session()->get('id_user');
+
+    $this->db->table('pesan_bantuan')
+        ->where('subjek', $subjek)
+        ->where('id_pengirim', $idUser)
+        ->orWhere('id_penerima', $idUser)
+        ->update(['is_closed' => 1]);
+
+    return redirect()->back();
+}
+
+    public function refreshChatSubjek($subjek)
+{
+    $idUser = session()->get('id_user');
+
+    $chat = $this->bantuanModel->listPercakapanBySubjek(urldecode($subjek), $idUser);
+
+    $html = '';
+    foreach ($chat as $c) {
+        $self = ($c['id_pengirim'] == $idUser);
+
+        $html .= '
+        <div style="text-align:' . ($self ? 'right' : 'left') . '; margin:5px;">
+            <span style="
+                background:' . ($self ? '#d1ffd1' : '#fff') . ';
+                padding:6px 12px;
+                border-radius:8px;
+                '. ($self ? '' : 'border:1px solid #ccc;') . '
+                display:inline-block;">
+                '.esc($c['pesan']).'
+            </span>
+        </div>';
     }
+
+    return $html;
+}
 
 }

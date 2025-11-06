@@ -51,9 +51,9 @@
 /* Kolom Kategori */
 #tableCari th:nth-child(5),
 #tableCari td:nth-child(5) {
-  width: 150px;
-  min-width: 150px;
-  max-width: 150px;
+  width: 100px;
+  min-width: 100px;
+  max-width: 100px;
 }
 
 /* Kolom Klasifikasi */

@@ -67,6 +67,28 @@
     }
   </script>
 
+  <script>
+    (function() {
+      let idleTime = 0;
+      const maxIdle = 30 * 60 * 1000; // 30 menit (dalam ms)
+      const logoutUrl = "<?= base_url('auth/logout') ?>";
+
+      function resetTimer() {
+        clearTimeout(window.idleTimer);
+        window.idleTimer = setTimeout(() => {
+          alert("Sesi kamu berakhir.");
+          window.location.href = logoutUrl;
+        }, maxIdle);
+      }
+
+      ['click', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(evt =>
+        document.addEventListener(evt, resetTimer)
+      );
+
+      resetTimer();
+    })();
+  </script>
+
   <?= $this->renderSection('styles') ?>
   <?= $this->renderSection('scripts') ?>
 

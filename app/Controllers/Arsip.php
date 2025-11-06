@@ -37,12 +37,23 @@ class Arsip extends BaseController
         $id_user = (int) session()->get('id_user');
         $level   = (int) session()->get('level');
 
+        // === Ambil semua arsip ===
         $arsip = $this->Model_arsip->getArsipForUserWithAkses($id_dep, $id_user, $level);
 
+        // 🧩 Filter tambahan: kalau bukan superadmin, hanya arsip dari departemennya sendiri
+        if ($level !== 0) {
+            $arsip = array_filter($arsip, function ($a) use ($id_dep) {
+                return (int)$a['id_dep'] === $id_dep;
+            });
+            $arsip = array_values($arsip); // reset index array
+        }
+
+        // === Ambil daftar kategori ===
         $kategori = ($level == 0)
             ? $this->Model_kategori->getKategoriWithDep()
             : $this->Model_kategori->getByDep($id_dep);
 
+        // === Ambil daftar departemen & user ===
         $departemen = $this->Model_departemen->findAll();
 
         $users = $this->Model_user
@@ -50,6 +61,7 @@ class Arsip extends BaseController
             ->join('tbl_dep', 'tbl_dep.id_dep = tbl_user.id_dep', 'left')
             ->findAll();
 
+        // === Tambahkan data akses per arsip ===
         foreach ($arsip as &$a) {
             $akses = $this->Model_arsip_akses->where('id_arsip', $a['id_arsip'])->findAll();
             $a['akses_dep'] = array_column($akses, 'id_dep');

@@ -146,6 +146,7 @@
     const departemenList = <?= json_encode($departemen) ?>;
     const usersList = <?= json_encode($users) ?>;
     const userLevel = <?= session()->get('level') ?>;
+    const userDepId = <?= session()->get('id_dep') ?? 'null' ?>;
 </script>
 
 <?= $this->section('styles') ?>

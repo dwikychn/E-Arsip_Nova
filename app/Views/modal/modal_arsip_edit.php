@@ -16,7 +16,6 @@ $isSuper = session()->get('level') == 0;
                 <?= csrf_field() ?>
                 <div class="modal-content">
 
-                    <!-- Header -->
                     <div class="modal-header bg-primary text-white">
                         <h5 class="modal-title">
                             <i class="fa fa-edit"></i> Edit Arsip
@@ -25,8 +24,6 @@ $isSuper = session()->get('level') == 0;
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-
-                    <!-- Body -->
                     <div class="modal-body">
                         <div class="table-responsive">
                             <table class="table table-bordered" id="tableArsipEdit">
@@ -35,7 +32,7 @@ $isSuper = session()->get('level') == 0;
                                         <th width="180">File</th>
                                         <th width="180">Nama Arsip</th>
                                         <?php if ($isSuper): ?>
-                                        <th width="150">Departemen</th>
+                                            <th width="150">Departemen</th>
                                         <?php endif; ?>
                                         <th width="180">Kategori</th>
                                         <th width="200">Deskripsi</th>
@@ -44,7 +41,6 @@ $isSuper = session()->get('level') == 0;
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <!-- File Column -->
                                         <td>
                                             <div class="file-column-container">
                                                 <button type="button" class="btn btn-sm btn-default btn-file" disabled title="<?= esc($a['file_arsip']) ?>">
@@ -56,27 +52,21 @@ $isSuper = session()->get('level') == 0;
                                                 </label>
                                             </div>
                                         </td>
-
-                                        <!-- Nama Arsip -->
                                         <td>
                                             <input type="text" name="nama_arsip" class="form-control" placeholder="Opsional (akan pakai nama file jika kosong)">
                                         </td>
-
-                                        <!-- Departemen (Super Admin Only) -->
                                         <?php if ($isSuper): ?>
-                                        <td>
-                                            <select name="id_dep" class="form-control" required>
-                                                <option value="">Pilih Departemen</option>
-                                                <?php foreach ($departemen as $d): ?>
-                                                    <option value="<?= $d['id_dep'] ?>" <?= $a['id_dep'] == $d['id_dep'] ? 'selected' : '' ?>>
-                                                        <?= esc($d['nama_dep']) ?>
-                                                    </option>
-                                                <?php endforeach; ?>
-                                            </select>
-                                        </td>
+                                            <td>
+                                                <select name="id_dep" class="form-control" required>
+                                                    <option value="">Pilih Departemen</option>
+                                                    <?php foreach ($departemen as $d): ?>
+                                                        <option value="<?= $d['id_dep'] ?>" <?= $a['id_dep'] == $d['id_dep'] ? 'selected' : '' ?>>
+                                                            <?= esc($d['nama_dep']) ?>
+                                                        </option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                            </td>
                                         <?php endif; ?>
-
-                                        <!-- Kategori -->
                                         <td>
                                             <select name="id_kategori" class="form-control" required>
                                                 <option value="">Pilih Kategori</option>
@@ -87,13 +77,9 @@ $isSuper = session()->get('level') == 0;
                                                 <?php endforeach; ?>
                                             </select>
                                         </td>
-
-                                        <!-- Deskripsi -->
                                         <td>
                                             <textarea name="deskripsi" class="form-control" rows="2" placeholder="Deskripsi (opsional)"><?= esc($a['deskripsi']) ?></textarea>
                                         </td>
-
-                                        <!-- Klasifikasi -->
                                         <td class="klasifikasi-cell">
                                             <select name="klasifikasi" class="form-control klasifikasi-select-edit" data-arsip-id="<?= $arsipId ?>" required>
                                                 <option value="">Pilih Klasifikasi</option>
@@ -101,12 +87,9 @@ $isSuper = session()->get('level') == 0;
                                                 <option value="terbatas" <?= $klasifikasi == 'terbatas' ? 'selected' : '' ?>>Terbatas</option>
                                                 <option value="rahasia" <?= $klasifikasi == 'rahasia' ? 'selected' : '' ?>>Rahasia</option>
                                             </select>
-
-                                            <!-- Container Akses Terbatas -->
                                             <div class="akses-terbatas-container" id="akses-edit-<?= $arsipId ?>" style="<?= $isTerbatas ? '' : 'display:none;' ?>">
                                                 <strong style="font-size:12px; color:#333;">Akses Terbatas:</strong>
                                                 <div class="akses-content-edit">
-                                                    <!-- Departemen -->
                                                     <small class="text-muted" style="font-size:11px; display:block; margin-bottom:8px;">Pilih departemen yang boleh akses:</small>
                                                     <div class="dep-wrapper">
                                                         <?php foreach ($departemen as $dep): ?>
@@ -117,15 +100,15 @@ $isSuper = session()->get('level') == 0;
                                                                 </label>
                                                                 <div class="user-container-inline" id="user-container-edit-<?= $arsipId ?>-<?= $dep['id_dep'] ?>" style="<?= in_array($dep['id_dep'], $selectedDeps) ? '' : 'display:none;' ?>">
                                                                     <label style="font-weight:normal; font-size:11px;">
-                                                                        <input type="checkbox" class="semua-user-edit" data-arsip-id="<?= $arsipId ?>" data-dep="<?= $dep['id_dep'] ?>"> 
+                                                                        <input type="checkbox" class="semua-user-edit" data-arsip-id="<?= $arsipId ?>" data-dep="<?= $dep['id_dep'] ?>">
                                                                         <small>Semua user</small>
                                                                     </label>
                                                                     <br>
-                                                                    <?php 
-                                                                    $usersInDep = array_filter($users, function($u) use ($dep) {
+                                                                    <?php
+                                                                    $usersInDep = array_filter($users, function ($u) use ($dep) {
                                                                         return $u['id_dep'] == $dep['id_dep'];
                                                                     });
-                                                                    foreach ($usersInDep as $u): 
+                                                                    foreach ($usersInDep as $u):
                                                                         $isChecked = isset($selectedUsers[$dep['id_dep']]) && in_array($u['id_user'], $selectedUsers[$dep['id_dep']]);
                                                                     ?>
                                                                         <label style="font-weight:normal; display:block; font-size:11px;">
@@ -137,8 +120,6 @@ $isSuper = session()->get('level') == 0;
                                                             </div>
                                                         <?php endforeach; ?>
                                                     </div>
-
-                                                    <!-- User Global -->
                                                     <hr style="margin:10px 0;">
                                                     <small class="text-muted" style="font-size:11px; display:block; margin-bottom:8px;">Atau pilih user global:</small>
                                                     <div id="user-global-edit-<?= $arsipId ?>" style="max-height:150px; overflow-y:auto;">
@@ -157,8 +138,6 @@ $isSuper = session()->get('level') == 0;
                             </table>
                         </div>
                     </div>
-
-                    <!-- Footer -->
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-primary">
                             <i class="fa fa-save"></i> Update
@@ -174,14 +153,13 @@ $isSuper = session()->get('level') == 0;
     </div>
 
     <script>
-    // Update nama file saat ganti file
-    function updateFileName<?= $arsipId ?>(input) {
-        if (input.files && input.files[0]) {
-            const fileName = input.files[0].name;
-            const btn = $(input).closest('.file-column-container').find('.btn-file');
-            const truncated = fileName.length > 15 ? fileName.substring(0, 12) + '...' : fileName;
-            btn.attr('title', fileName).html('<i class="fa fa-file"></i> ' + truncated);
+        function updateFileName<?= $arsipId ?>(input) {
+            if (input.files && input.files[0]) {
+                const fileName = input.files[0].name;
+                const btn = $(input).closest('.file-column-container').find('.btn-file');
+                const truncated = fileName.length > 15 ? fileName.substring(0, 12) + '...' : fileName;
+                btn.attr('title', fileName).html('<i class="fa fa-file"></i> ' + truncated);
+            }
         }
-    }
     </script>
 <?php endforeach; ?>

@@ -31,7 +31,7 @@
 
 /* Icon menu */
 .main-sidebar .sidebar a > i {
-  color: #000000 !important; /* Nonaktif hitam */
+  color: #000000 !important;
   margin-right: 12px;
   width: 20px;
   text-align: center;
@@ -113,20 +113,9 @@
   border: none !important;
 }
 
+/* ========== SEMBUNYIKAN TOMBOL TOGGLE SIDEBAR ========== */
 .main-header .navbar .sidebar-toggle {
-  color: #333 !important;
-  border: none !important;
-  border-radius: 8px;
-  padding: 10px 15px;
-  transition: all 0.3s ease;
-}
-
-/* Hover toggle */
-.main-header .sidebar-toggle:hover {
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
-  color: #000 !important;
-  transform: scale(1.05);
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+  display: none !important;
 }
 
 /* Logo */
@@ -294,18 +283,18 @@
 
 /* Submenu icon default (nonaktif) */
 .main-sidebar .sidebar-menu .treeview-menu > li > a > i {
-  color: #000000 !important; /* hitam */
+  color: #000000 !important;
   transition: color 0.3s ease;
 }
 
 /* Submenu icon aktif (putih) */
 .main-sidebar .sidebar-menu .treeview-menu > li.active > a > i {
-  color: #ffffff !important; /* putih */
+  color: #ffffff !important;
 }
 
 /* Saat hover submenu icon */
 .main-sidebar .sidebar-menu .treeview-menu > li > a:hover > i {
-  color: rgb(168, 211, 255) !important; /* biru saat hover */
+  color: rgb(168, 211, 255) !important;
 }
 
 /* ==================== Fix Bug ==================== */
@@ -328,4 +317,14 @@
 .main-sidebar .sidebar-menu > li:hover,
 .main-sidebar .sidebar-menu > li:focus {
   background-color: transparent !important;
+}
+
+/* ========== DISABLE SIDEBAR COLLAPSE ========== */
+body.sidebar-collapse .main-sidebar {
+  margin-left: 0 !important;
+}
+
+body.sidebar-collapse .content-wrapper,
+body.sidebar-collapse .main-footer {
+  margin-left: 230px !important;
 }

@@ -129,13 +129,13 @@
                                 <p>Jumlah: <?= $jumlahFile ?></p>
                             </div>
                         </a>
-                        <a href="<?= base_url('backupdb') ?>" class="quick-card rounded-lg bg-pastel-orange">
+                        <!-- <a href="<?= base_url('backupdb') ?>" class="quick-card rounded-lg bg-pastel-orange">
                             <div class="quick-icon"><i class="fa fa-database"></i></div>
                             <div class="quick-content">
                                 <h4>Backup Database</h4>
                                 <p>Download file SQL</p>
                             </div>
-                        </a>
+                        </a> -->
                     </div>
                 </div>
             </div>

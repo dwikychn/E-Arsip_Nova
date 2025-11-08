@@ -10,8 +10,16 @@
 
     <div class="box-body">
       <?php if (session()->getFlashdata('error_cari')): ?>
-        <div class="alert alert-danger">
+        <div class="alert alert-danger alert-dismissible">
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
           <?= implode('<br>', (array) session()->getFlashdata('error_cari')) ?>
+        </div>
+      <?php endif; ?>
+
+      <?php if (session()->getFlashdata('pesan_cari')): ?>
+        <div class="alert alert-success alert-dismissible">
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+          <?= session()->getFlashdata('pesan_cari') ?>
         </div>
       <?php endif; ?>
 
@@ -19,14 +27,15 @@
         <table id="tableCari" class="table table-bordered table-striped table-hover" style="width:100%">
           <thead>
             <tr>
+              <th width="30"><input type="checkbox" id="selectAll"></th>
               <th>No</th>
               <th>Nama Dokumen</th>
-              <th>Deskripsi</th>
               <th>Departemen</th>
               <th>Kategori</th>
               <th>Klasifikasi</th>
               <th>Tgl. Upload</th>
               <th>Tgl. Update</th>
+              <th>Deskripsi</th>
             </tr>
           </thead>
 
@@ -74,10 +83,14 @@
               // ❌ SKIP file terbatas yang tidak diizinkan
               if (!$allowed) continue;
 
+              // Direct URL ke file (cara lama yang sudah jalan)
               $cleanPath = preg_replace('#^uploads/#', '', $a['path_arsip']);
-              $pathFile  = base_url('uploads/' . $cleanPath . '/' . $a['file_arsip']);
+              $pathFile = base_url('uploads/' . $cleanPath . '/' . $a['file_arsip']);
             ?>
               <tr>
+                <td class="text-center">
+                  <input type="checkbox" class="checkboxArsip" value="<?= $a['id_arsip'] ?>" data-file="<?= $pathFile ?>" data-nama="<?= esc($a['file_arsip']) ?>">
+                </td>
                 <td class="text-center"><?= $no++ ?></td>
 
                 <td>
@@ -89,7 +102,6 @@
                   </a>
                 </td>
 
-                <td title="<?= esc($a['deskripsi']) ?>"><?= esc($a['deskripsi']) ?></td>
                 <td><?= esc($a['nama_dep']) ?></td>
                 <td><?= esc($a['nama_kategori']) ?></td>
 
@@ -111,10 +123,18 @@
 
                 <td><?= esc($a['tgl_upload']) ?></td>
                 <td><?= esc($a['tgl_update']) ?></td>
+                <td title="<?= esc($a['deskripsi']) ?>"><?= esc($a['deskripsi']) ?></td>
               </tr>
             <?php endforeach; ?>
           </tbody>
         </table>
+      </div>
+
+      <!-- Tombol Download Terpilih -->
+      <div id="downloadContainer" class="text-right" style="display:none; margin-top: 15px;">
+        <button type="button" class="btn btn-success" id="btnDownloadSelected">
+          <i class="fa fa-download"></i> Download Terpilih
+        </button>
       </div>
     </div>
   </div>

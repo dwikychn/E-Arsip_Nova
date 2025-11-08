@@ -14,9 +14,18 @@
   box-sizing: border-box !important;
 }
 
-/* Kolom No */
+/* Kolom Checkbox */
 #tableCari th:nth-child(1),
 #tableCari td:nth-child(1) {
+  width: 30px;
+  min-width: 30px;
+  max-width: 30px;
+  text-align: center;
+}
+
+/* Kolom No */
+#tableCari th:nth-child(2),
+#tableCari td:nth-child(2) {
   width: 50px;
   min-width: 50px;
   max-width: 50px;
@@ -24,19 +33,11 @@
 }
 
 /* Kolom Nama Dokumen */
-#tableCari th:nth-child(2),
-#tableCari td:nth-child(2) {
+#tableCari th:nth-child(3),
+#tableCari td:nth-child(3) {
   width: 300px;
   min-width: 300px;
   max-width: 300px;
-}
-
-/* Kolom Deskripsi */
-#tableCari th:nth-child(3),
-#tableCari td:nth-child(3) {
-  width: 200px;
-  min-width: 200px;
-  max-width: 200px;
 }
 
 /* Kolom Departemen */
@@ -51,9 +52,9 @@
 /* Kolom Kategori */
 #tableCari th:nth-child(5),
 #tableCari td:nth-child(5) {
-  width: 100px;
-  min-width: 100px;
-  max-width: 100px;
+  width: 150px;
+  min-width: 150px;
+  max-width: 150px;
 }
 
 /* Kolom Klasifikasi */
@@ -79,6 +80,14 @@
   width: 120px;
   min-width: 120px;
   max-width: 120px;
+}
+
+/* Kolom Deskripsi (Paling Kanan) */
+#tableCari th:nth-child(9),
+#tableCari td:nth-child(9) {
+  width: 250px;
+  min-width: 250px;
+  max-width: 250px;
 }
 
 /* Hover effect */
@@ -125,7 +134,7 @@
 }
 
 /* Kolom Nama Dokumen pakai ellipsis */
-#tableCari td:nth-child(2) a {
+#tableCari td:nth-child(3) a {
   display: block;
   width: 100%;
   white-space: nowrap;
@@ -138,14 +147,14 @@
 }
 
 /* Saat hover, tunjukkan kursor pointer */
-#tableCari td:nth-child(2) a:hover {
+#tableCari td:nth-child(3) a:hover {
   text-decoration: underline;
   cursor: pointer;
 }
 
 /* Kolom Deskripsi pakai ellipsis juga */
-#tableCari td:nth-child(3) {
-  max-width: 200px;
+#tableCari td:nth-child(9) {
+  max-width: 250px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -153,6 +162,6 @@
 }
 
 /* Saat hover tampilkan tooltip deskripsi penuh */
-#tableCari td:nth-child(3)[title] {
+#tableCari td:nth-child(9)[title] {
   cursor: help;
 }

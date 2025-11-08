@@ -25,17 +25,19 @@ $(document).ready(function() {
         previous: "Previous",
         next: "Next"
       },
+      lengthMenu: "Tampilkan _MENU_ data",
       info: ""
     },
     columnDefs: [
-      { width: '50px', targets: 0 },
-      { width: '300px', targets: 1 },
-      { width: '200px', targets: 2 },
+      { width: '30px', targets: 0, orderable: false },
+      { width: '50px', targets: 1 },
+      { width: '300px', targets: 2 },
       { width: '80px', targets: 3 },
       { width: '150px', targets: 4 },
       { width: '80px', targets: 5 },
       { width: '120px', targets: 6 },
-      { width: '120px', targets: 7 }
+      { width: '120px', targets: 7 },
+      { width: '250px', targets: 8 }
     ],
     initComplete: function() {
       const api = this.api();
@@ -43,8 +45,8 @@ $(document).ready(function() {
       api.columns().eq(0).each(function(colIdx) {
         const cell = $('.filters th').eq(colIdx);
         
-        // Skip kolom No (0)
-        if (colIdx === 0) {
+        // Skip kolom checkbox (0) dan No (1)
+        if (colIdx === 0 || colIdx === 1) {
           return $(cell).empty();
         }
 
@@ -60,7 +62,67 @@ $(document).ready(function() {
       setTimeout(function() {
         api.columns.adjust();
       }, 50);
+
+      console.log('✅ Filter per kolom cari berhasil ditambahkan!');
     }
+  });
+
+  // === Checkbox Select All ===
+  $('#selectAll').on('change', function() {
+    $('.checkboxArsip').prop('checked', this.checked);
+    updateButtonVisibility();
+  });
+
+  $('.checkboxArsip').on('change', function() {
+    updateButtonVisibility();
+  });
+
+  function updateButtonVisibility() {
+    const checked = $('.checkboxArsip:checked').length > 0;
+    $('#downloadContainer').toggle(checked);
+  }
+
+  // === Download Selected Files ===
+  $('#btnDownloadSelected').on('click', function() {
+    const selectedFiles = [];
+    
+    $('.checkboxArsip:checked').each(function() {
+      const fileUrl = $(this).data('file');
+      const fileName = $(this).data('nama');
+      
+      if (fileUrl) {
+        selectedFiles.push({
+          url: fileUrl,
+          name: fileName
+        });
+      }
+    });
+
+    if (selectedFiles.length === 0) {
+      alert('Tidak ada file yang dipilih.');
+      return;
+    }
+
+    // Download satu per satu dengan delay
+    let index = 0;
+    const downloadInterval = setInterval(function() {
+      if (index >= selectedFiles.length) {
+        clearInterval(downloadInterval);
+        alert(`${selectedFiles.length} file berhasil didownload!`);
+        return;
+      }
+
+      const file = selectedFiles[index];
+      const link = document.createElement('a');
+      link.href = file.url;
+      link.download = file.name;
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      index++;
+    }, 500); // Delay 500ms antar download
   });
 
   // === Preview File ===

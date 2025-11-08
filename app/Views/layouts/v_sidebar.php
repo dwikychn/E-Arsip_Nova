@@ -78,11 +78,15 @@
             <?php endif; ?>
 
             <!-- Bantuan tampil untuk semua -->
-            <li class="<?= (uri_string() == 'bantuan') ? 'active' : '' ?>">
-                <a href="<?= base_url('bantuan') ?>">
-                    <i class="fa fa-question-circle"></i> <span>Bantuan</span>
-                </a>
-            </li>
+            <!-- <?php if (session()->get('level') <= 1): ?>
+                <li class="<?= (uri_string() == 'bantuan') ? 'active' : '' ?>">
+                    <a href="<?= base_url('bantuan') ?>">
+                        <i class="fa fa-question-circle"></i> <span>Bantuan</span>
+                    </a>
+                </li>
+            <?php endif; ?> -->
+
+
         </ul>
     </section>
 </aside>

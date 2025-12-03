@@ -16,7 +16,7 @@ class App extends BaseConfig
      *
      * E.g., http://example.com/
      */
-    public string $baseURL = 'https://10.10.1.1/e-arsip_ci4/';
+    public string $baseURL = 'https://10.10.10.6/e-arsip_ci4/';
 
     /**
      * Allowed Hostnames in the Site URL other than the hostname in the baseURL.

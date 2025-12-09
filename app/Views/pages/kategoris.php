@@ -11,54 +11,6 @@
             </div>
         </div>
 
-        <div class="box box-primary" id="formTambahKategori" style="display: none;">
-            <div class="box-body">
-                <form action="<?= base_url('kategori/add') ?>" method="post">
-                    <?= csrf_field() ?>
-                    <div class="form-group">
-                        <label for="nama_kategori">Nama Kategori</label>
-                        <input type="text" name="nama_kategori" id="nama_kategori" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="parent_id">Parent Kategori</label>
-                        <select name="parent_id" id="parent_id" class="form-control">
-                            <option value="">-- Kategori Utama --</option>
-                            <?php
-                            function renderOptions($kategori, $prefix = '')
-                            {
-                                foreach ($kategori as $row) {
-                                    echo '<option value="' . $row['id_kategori'] . '">' . $prefix . esc($row['nama_kategori']) . '</option>';
-                                    if (!empty($row['children']) && is_array($row['children'])) {
-                                        renderOptions($row['children'], $prefix . '— ');
-                                    }
-                                }
-                            }
-                            if (!empty($kategoriTree)) {
-                                renderOptions($kategoriTree);
-                            }
-                            ?>
-                        </select>
-                    </div>
-
-                    <?php if (session()->get('level') == '0'): ?>
-                        <div class="form-group">
-                            <label for="id_dep">Departemen</label>
-                            <select name="id_dep" id="id_dep" class="form-control" required>
-                                <option value="">-- Pilih Departemen --</option>
-                                <?php foreach ($departemen as $d): ?>
-                                    <option value="<?= $d['id_dep'] ?>"><?= esc($d['nama_dep']) ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                    <?php else: ?>
-                        <input type="hidden" name="id_dep" value="<?= session()->get('id_dep') ?>">
-                    <?php endif; ?>
-
-                    <button type="submit" class="btn btn-primary">Simpan</button>
-                </form>
-            </div>
-        </div>
-
         <!-- HEADER -->
         <div class="box box-primary">
             <div class="box-body">
@@ -250,13 +202,6 @@ $kategori = flattenKategori($kategoriTree);
     'kategoriTree' => $kategoriTree
 ]) ?>
 
-<script>
-    document.getElementById('btnTambahKategori').addEventListener('click', function() {
-        const form = document.getElementById('formTambahKategori');
-        form.style.display = (form.style.display === 'none') ? 'block' : 'none';
-    });
-</script>
-
 <?= $this->section('styles') ?>
 <link rel="stylesheet" href="<?= base_url('template/custom/css/kategori.css') ?>">
 <?= $this->endSection() ?>
@@ -267,5 +212,6 @@ $kategori = flattenKategori($kategoriTree);
 </script>
 <script src="<?= base_url('template/custom/js/kategori.js') ?>"></script>
 <?= $this->endSection() ?>
+
 
 <?= $this->endSection() ?>

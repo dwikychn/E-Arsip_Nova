@@ -1,8 +1,8 @@
-<div class="modal fade" id="add">
-    <div class="modal-dialog">
+<div class="modal fade" id="modalAddKategori" tabindex="-1" aria-labelledby="modalAddKategoriLabel" aria-hidden="true">
+    <div class="modal-dialog modal-full">
         <div class="modal-content modal-sm">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 <h4 class="modal-title">Tambah Kategori</h4>
             </div>
             <form action="<?= base_url('kategori/add') ?>" method="post">
@@ -49,7 +49,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary">Simpan</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                 </div>
             </form>
         </div>
